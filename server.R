@@ -1,8 +1,6 @@
 source( "sources.R" )
 source( "funbox.R" )
 
-load( "data/all.RData" )
-
 #rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
 
 # meas = read.csv( "data/rnfltdiff_example.csv" ) # load the example
@@ -20,7 +18,15 @@ empty.row <- data.frame( SDS = NaN, CNT = NaN )
 server <-
 	function( input, output, session ) {
 		
+		print( getwd() )
+		load( "data/all.RData" )
+		
+		print( visitor )
+		
 		rv <- reactiveValues( )
+		
+		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
+		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
 		
 		rv [[ "TABLE_PERCENTILES" ]] <- 
 			data.frame(

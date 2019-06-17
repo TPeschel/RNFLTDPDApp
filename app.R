@@ -1,5 +1,7 @@
 rm( list = ls( ) )
 
+# install.packages( c( "DT", "markdown", "plotrix", "plotly", "rhandsontable", "shiny", "shinycssloaders", "shinydashboard" ) )
+
 library( "DT" )
 library( "markdown" )
 library( "plotly" )

@@ -149,7 +149,7 @@ ui <-
 					min = 20,
 					max = 80,
 					animate = F,
-					value = visitor [[ "age" ]]
+					value = 50
 				),
 				
 				tags$hr( ),
@@ -166,7 +166,7 @@ ui <-
 					max = +.1,
 					ticks = .01,
 					animate = F,
-					value = visitor [[ "radiusdiff" ]]
+					value = 0
 				),
 				
 				tags$hr( ),
@@ -276,12 +276,12 @@ ui <-
 								infoBox(
 									width = 4,
 									"Age",
-									visitor [[ "age" ]]
+									"VISITOR_AGE"
 								),
 								infoBox(
 									width = 8,
 									"Radius Difference",
-									visitor [[ "radiusdiff" ]]
+									"VISITOR_RDIFF"
 								)
 							),
 							tags$hr( ),
