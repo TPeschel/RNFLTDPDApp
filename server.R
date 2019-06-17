@@ -1,6 +1,8 @@
 source( "sources.R" )
 source( "funbox.R" )
 
+load( "data/all.RData" )
+
 #rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
 
 # meas = read.csv( "data/rnfltdiff_example.csv" ) # load the example
@@ -15,10 +17,9 @@ rdiffs <- seq( -.1, +.1, length.out = length( ages ) )
 rdiffs.names <- as.character( round( rdiffs, 3 ) )
 empty.row <- data.frame( SDS = NaN, CNT = NaN )
 
+
 server <-
 	function( input, output, session ) {
-		
-		load( "data/all.RData" )
 		
 		rv <- reactiveValues( )
 		
