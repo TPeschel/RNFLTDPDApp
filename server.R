@@ -18,10 +18,7 @@ empty.row <- data.frame( SDS = NaN, CNT = NaN )
 server <-
 	function( input, output, session ) {
 		
-		print( getwd() )
 		load( "data/all.RData" )
-		
-		print( visitor )
 		
 		rv <- reactiveValues( )
 		
@@ -35,7 +32,7 @@ server <-
 			)
 		
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
-		norms = calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline )
+		norms = calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline, norms = rnfltdiffnorms )
 
 		qn <- pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma )
 		
