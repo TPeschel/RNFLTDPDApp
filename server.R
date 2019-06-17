@@ -26,6 +26,12 @@ server <-
 		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
 		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
 		
+		output$VBOX_AGE <-
+			renderValueBox( { valueBox( "Age", visitor [[ "age" ]] ) } )
+
+		output$VBOX_RDIFF <-
+			renderValueBox( { valueBox( "Radius Difference", visitor [[ "radiusdiff" ]] ) } )
+		
 		rv [[ "TABLE_PERCENTILES" ]] <- 
 			data.frame(
 				SDS = c( NaN, qnorm( cents ),NaN ),

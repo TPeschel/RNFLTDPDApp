@@ -273,16 +273,8 @@ ui <-
 								# 	outputId = "ID_TABLE_VISITOR",
 								# 	width = '100%'
 								# )
-								infoBox(
-									width = 4,
-									"Age",
-									"VISITOR_AGE"
-								),
-								infoBox(
-									width = 8,
-									"Radius Difference",
-									"VISITOR_RDIFF"
-								)
+								valueBoxOutput( "VBOX_AGE" ),
+								valueBoxOutput( "VBOX_RDIFF" )
 							),
 							tags$hr( ),
 							box(
