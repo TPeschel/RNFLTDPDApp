@@ -9,14 +9,12 @@ load( "data/all.RData" )
 # 
 # rnfltdiff = meas[ -c( 1, 2 ) ]
 
-cents  <- c( .01, .05, .500, .95, .99 )
 angles <- seq( 0, 360, length.out = 768 )
 angle.names <- as.character( round( angles, 2 ) )
 ages   <- c( 20 : 80 )
 rdiffs <- seq( -.1, +.1, length.out = length( ages ) )
 rdiffs.names <- as.character( round( rdiffs, 3 ) )
 empty.row <- data.frame( SDS = NaN, CNT = NaN )
-
 
 server <-
 	function( input, output, session ) {
@@ -34,8 +32,8 @@ server <-
 		
 		rv [[ "TABLE_PERCENTILES" ]] <- 
 			data.frame(
-				SDS = c( NaN, qnorm( cents ),NaN ),
-				CNT = c( NaN, 100. * cents, NaN )
+				SDS = c( NaN, qnorm( c( .01, .05, .500, .95, .99 ) ),NaN ),
+				CNT = c( NaN, 100. * c( .01, .05, .500, .95, .99 ), NaN )
 			)
 		
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
@@ -297,7 +295,7 @@ server <-
 							p = plt,
 							type = "scatter3d", 
 							mode = "lines",
-							x = rep( visitor$radiusdiff, ncol( visitor ) - 2 ),
+							x = rep( input$ID_SI_RADDIFF, ncol( visitor ) - 2 ),
 							y = rv [[ "dataAngle" ]]$angle,
 							z = cn,
 							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
@@ -376,7 +374,7 @@ server <-
 							p = plt,
 							type = "scatter3d", 
 							mode = "lines",
-							x = rep( visitor$age, ncol( visitor ) - 2 ),
+							x = rep( input$ID_SI_AGE, ncol( visitor ) - 2 ),
 							y = rv [[ "dataAngle" ]]$angle,
 							z = cn,
 							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
