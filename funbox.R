@@ -71,3 +71,15 @@ tableOptions <-
 		dom = 'Bpfrtip', 
 		buttons = c('copy', 'excel', 'csv', 'print', 'colvis' )
 	)
+
+clrscle <-
+	function( ) {
+		list( seq( 0, 1, length.out = 7 ), c( "darkblue", "lightblue", "white", "green", "white", "red", "darkred" ) )
+	}
+
+"darkblue" %in% colors()
+
+clrspal <-
+	function( length = 5 ) {
+		colorRampPalette( c( "darkblue", "lightblue", "white", "green", "white", "red", "darkred" ) )( length )
+	}

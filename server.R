@@ -39,7 +39,7 @@ server <-
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
 		norms = calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline, norms = rnfltdiffnorms )
 
-		qn <- pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma )
+		qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
 		
 		rv [[ "TABLE_VISITOR" ]] <-
 			data.frame( 
@@ -118,7 +118,7 @@ server <-
 				
 				norms <- calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline )
 				
-				qn <- pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma )
+				qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
 				
 				rv [[ "TABLE_VISITOR" ]] <-
 					cbind( 
@@ -227,6 +227,8 @@ server <-
 							yaxis = list( title = "RNFLT OS-OD [µm]" )
 						)
 					
+				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
+				
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAngle" ]]$cents[[ i ]]
@@ -236,7 +238,8 @@ server <-
 							p = plt,
 							x = rv [[ "dataAngle" ]]$angle,
 							y = cn,
-							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ]
+							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
+							line = list( color = cp[ i ] )
 						)
 				}
 				
@@ -245,7 +248,8 @@ server <-
 						p = plt,
 						x = rv [[ "TABLE_VISITOR" ]] [[ "ANGLE" ]],
 						y = rv [[ "TABLE_VISITOR" ]] [[ "RNFLTD" ]],
-						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] )
+						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] ),
+						line = list( color = "black" )
 					)
 				
 				plt
@@ -257,7 +261,6 @@ server <-
 				plt <- 
 					plot_ly( 
 						 
-					#	colorscale = list( c( 0, cents, 1 ), colorRampPalette( c( "black", "red", "yellow", "green", "yellow", "red", "black" ) )( length( cents ) + 2 ) )
 					) %>%
 					layout(
 						scene = list(
@@ -267,6 +270,8 @@ server <-
 						)
 					)
 				
+				cs <- clrscle( )
+
 				for( i in 1 : length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) ) {
 
 					cn <- rv [[ "dataRaddiffAngle" ]]$cents[[ i ]]
@@ -282,9 +287,11 @@ server <-
 							opacity = .75,
 							cmin = -80,#min( rv$data1$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data1$cents[[ 3 ]], na.rm = T ),
-							colorscale = list( seq( 0, 1, length.out = 7 ), c( "green", "green", "white", "blue", "white", "red", "red" ) )
+							colorscale = cs
 						)
 				}
+				
+				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
 				
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
@@ -299,20 +306,20 @@ server <-
 							y = rv [[ "dataAngle" ]]$angle,
 							z = cn,
 							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
-							line = list( width = 10 )
+							line = list( width = 10, color = cp[ i ] )
 						)
 				}
 				
 				plt <-
 					add_trace(
 						p = plt,
-						type = "scatter3d", 
+						type = "scatter3d",
 						mode = "lines",
 						x = rep( visitor$radiusdiff, ncol( visitor ) - 2 ),
 						y = rv [[ "TABLE_VISITOR" ]] [[ "ANGLE" ]],
 						z = rv [[ "TABLE_VISITOR" ]] [[ "RNFLTD" ]],
-						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] ),
-						line = list( width = 15, color = "black" )
+						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] )#,
+						#line = list( width = 15, color = "black" )
 					)
 
 				plt
@@ -333,6 +340,8 @@ server <-
 						)
 					)
 
+				cs <- clrscle( )
+				
 				for( i in 1 : length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAgeAngle" ]]$cents[[ i ]]
@@ -349,21 +358,11 @@ server <-
 							opacity = .75,
 							cmin = -80,#min( rv$data2$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data2$cents[[ 3 ]], na.rm = T ), 
-							colorscale = 
-								list( 
-									c( 0, 1 ),
-									c( 
-										colorRampPalette( c( "red", "yellow", "green", "yellow", "red" ) )( 101 )[ na.omit( 1 + round( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) )[ i ] ],
-										colorRampPalette( c( "red", "yellow", "green", "yellow", "red" ) )( 101 )[ na.omit( 1 + round( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) )[ i ] ]
-									)
-								)
-							# colorscale = 
-							# 	list( 
-							# 		c( 0, .01, .25, .5, .75, .99, 1 ),
-							# 		c( "green", "green", "white", "blue", "white", "red", "red" )
-							# 	)
+							colorscale = cs
 						)
 				}
+
+				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
 
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
@@ -378,7 +377,7 @@ server <-
 							y = rv [[ "dataAngle" ]]$angle,
 							z = cn,
 							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
-							line = list( width = 10 )
+							line = list( width = 10, color = cp[ i ] )
 						)
 				}
 				
