@@ -94,8 +94,8 @@ clrscl <-
 
 clrscl.monochrome <-
 	function( value.between.0.and.zero, col.vec = default.color.vector ) {
-		vl <- 1 + 99 * value.between.0.and.zero
-		cl <- colorRampPalette( col.vec )( 100 )
+		vl <- 1 + 100 * value.between.0.and.zero
+		cl <- colorRampPalette( col.vec )( 101 )
 		list( 
 			c( 0, 1 ),
 			c( cl[ vl ], cl[ vl ] )
@@ -105,4 +105,12 @@ clrscl.monochrome <-
 clrspal <-
 	function( length = 5, col.vec = default.color.vector ) {
 		colorRampPalette( col.vec )( length )
+	}
+
+percentiles.color.palette <-
+	function( perc.vec, col.vec = default.color.vector ) {
+		
+		cp <- colorRampPalette( col.vec )( 101 )
+		
+		cp[ 1 + perc.vec ]
 	}

@@ -230,7 +230,7 @@ server <-
 							yaxis = list( title = "RNFLT OS-OD [µm]" )
 						)
 					
-				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
+				cp <- percentiles.color.palette( as.numeric( gsub( "%", "", names( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) ) )
 				
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
@@ -322,8 +322,8 @@ server <-
 						x = rep( visitor$radiusdiff, ncol( visitor ) - 2 ),
 						y = rv [[ "TABLE_VISITOR" ]] [[ "ANGLE" ]],
 						z = rv [[ "TABLE_VISITOR" ]] [[ "RNFLTD" ]],
-						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] )#,
-						#line = list( width = 15, color = "black" )
+						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] ),
+						line = list( width = 15, color = "black" )
 					)
 
 				plt
