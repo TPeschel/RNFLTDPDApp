@@ -16,6 +16,9 @@ rdiffs <- seq( -.1, +.1, length.out = length( ages ) )
 rdiffs.names <- as.character( round( rdiffs, 3 ) )
 empty.row <- data.frame( SDS = NaN, CNT = NaN )
 
+get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
+get.cnts <- function( i ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
+
 server <-
 	function( input, output, session ) {
 		
@@ -270,7 +273,7 @@ server <-
 						)
 					)
 				
-				cs <- clrscle( )
+				#cs <- clrscle( )
 
 				for( i in 1 : length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) ) {
 
@@ -284,10 +287,11 @@ server <-
 							z = cn, 
 							name = names( rv [[ "dataRaddiffAngle" ]]$cents )[ i ], 
 							showscale = i == 1,
-							opacity = .75,
+							opacity = input$ID_SI_OPACITY_RDA,
 							cmin = -80,#min( rv$data1$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data1$cents[[ 3 ]], na.rm = T ),
-							colorscale = cs
+							colorscale = clrscl.monochrome( na.omit( .01 * rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) [ i ] )
+							#colorscale = cs
 						)
 				}
 				
@@ -340,7 +344,7 @@ server <-
 						)
 					)
 
-				cs <- clrscle( )
+				cs <- clrscl( )
 				
 				for( i in 1 : length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) ) {
 					

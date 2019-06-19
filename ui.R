@@ -222,9 +222,24 @@ ui <-
 					tabItem(
 						tabName = "TAB_RNFLTD_3D_RDA",
 						fluidRow(
+							column(
+								box(
+									sliderInput(
+										"ID_SI_OPACITY_RDA",
+										"opacity",
+										min = 0,
+										max = 1,
+										step = .01,
+										value = .75
+									),
+									width = 12
+									),
+								width = 2
+							),
+							
 							box(
 								title = "RNFLT Differences OS - OD 3D Percentiles Plot over Radius Difference and Angle",
-								width = 12,
+								width = 10,
 								height = "auto",
 								withSpinner(
 									plotlyOutput(

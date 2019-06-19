@@ -72,14 +72,37 @@ tableOptions <-
 		buttons = c('copy', 'excel', 'csv', 'print', 'colvis' )
 	)
 
-clrscle <-
-	function( ) {
-		list( seq( 0, 1, length.out = 7 ), c( "darkblue", "lightblue", "white", "green", "white", "red", "darkred" ) )
+default.color.vector <-
+	c( "darkblue", "yellow", "green", "yellow", "darkred" )
+
+clrscl <-
+	function( col.vec = default.color.vector, len = length( col.vec ) ) {
+		
+		if( length( col.vec ) == len ) {
+			list( 
+				c( seq( 0, 1, length.out = len ) ), 
+				c( col.vec )
+			)
+		}
+		else {
+			list(
+				c( seq( 0, 1, length.out = len ) ),
+				colorRampPalette( col.vec )( len )
+			)
+		}
 	}
 
-"darkblue" %in% colors()
-
+clrscl.monochrome <-
+	function( value.between.0.and.zero, col.vec = default.color.vector ) {
+		vl <- 1 + 99 * value.between.0.and.zero
+		cl <- colorRampPalette( col.vec )( 100 )
+		list( 
+			c( 0, 1 ),
+			c( cl[ vl ], cl[ vl ] )
+		)
+	}
+#clrscl.monochrome( .4, default.color.vector)
 clrspal <-
-	function( length = 5 ) {
-		colorRampPalette( c( "darkblue", "lightblue", "white", "green", "white", "red", "darkred" ) )( length )
+	function( length = 5, col.vec = default.color.vector ) {
+		colorRampPalette( col.vec )( length )
 	}
