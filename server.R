@@ -1,7 +1,7 @@
 source( "sources.R" )
 source( "funbox.R" )
 
-load( "../data/all.RData" )
+load( "data/all.RData" )
 
 #rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
 
