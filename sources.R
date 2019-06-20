@@ -42,6 +42,8 @@ check.install( "gamlss.dist" )
 # 
 # save( list = c( "rnfltdiffnorms", "sector.abs.rnfltdiffnorms", "visitor" ), file = "data/all.RData" )
 
+load( "data/all.RData" )
+
 sector.indices <- function(sector.label, n=768)
 # return TRUE for all measurement locations that belong to the sector
 # given by sector.label
@@ -63,7 +65,7 @@ sector.indices <- function(sector.label, n=768)
 	(1:n) %in% inds.true
 }
 
-calculate.normative.distribution <- function(age, radiusdiff=0, angles=seq(0, 360, length=768), smoothing=smooth.spline, norms = rnfltdiffnorms)
+calculate.normative.distribution <- function(age, radiusdiff=0, angles=seq(0, 360, length=768), smoothing=smooth.spline, norms = rnfltdiffnorms )
 # calculate normative distribution of RNFLT OS - OD 
 # for given angles (vector)
 # given a specific age and radius difference

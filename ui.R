@@ -139,7 +139,7 @@ ui <-
 				
 				actionButton(
 					"ID_CB_SET_TO_VISITOR_AGE",
-					"set to visitor age",
+					"set to visitor's age",
 					width = "88%"
 				),
 				
@@ -156,7 +156,7 @@ ui <-
 				
 				actionButton(
 					"ID_CB_SET_TO_VISITOR_RADDIFF",
-					"set to visitor radius difference"
+					"set to visitor's radius difference"
 				),
 				
 				sliderInput(
@@ -256,8 +256,22 @@ ui <-
 					tabItem(
 						tabName = "TAB_RNFLTD_3D_AA",
 						fluidRow(
+							column(
+								box(
+									sliderInput(
+										"ID_SI_OPACITY_AA",
+										"opacity",
+										min = 0,
+										max = 1,
+										step = .01,
+										value = .75
+									),
+									width = 12
+								),
+								width = 2
+							),
 							box(
-								width = 12,
+								width = 10,
 								title = "RNFLT Differences OS - OD 3D Percentiles Plot over Age and Angle",
 								height = "auto",
 								withSpinner(
@@ -273,7 +287,14 @@ ui <-
 					),
 					
 					tabItem(
-						tabName = "TAB_WELCOME"
+						tabName = "TAB_WELCOME",
+						box(
+							width = 12,
+							height = "auto",
+							title = "Welcome",
+							footer = "Have Fun!",
+							includeMarkdown( "www/welcome.md" )
+						)
 					),
 					
 					tabItem(
@@ -301,7 +322,13 @@ ui <-
 					),
 					
 					tabItem(
-						tabName = "TAB_METHODS"
+						tabName = "TAB_METHODS",
+						box(
+							width = 12,
+							height = "auto",
+							title = "Methods",
+							includeMarkdown( "www/methods.md" )
+						)
 					),
 					
 					tabItem(
@@ -331,11 +358,25 @@ ui <-
 					# ),
 					
 					tabItem(
-						tabName = "TAB_REFS"
+						tabName = "TAB_REFS",
+						box(
+							width = 12,
+							height = "auto",
+							title = "Welcome",
+							footer = "Have Fun!",
+							includeMarkdown( "www/references.md" )
+						)
 					),
 					
 					tabItem(
-						tabName = "TAB_HELP"
+						tabName = "TAB_HELP",
+						box(
+							width = 12,
+							height = "auto",
+							title = "Welcome",
+							footer = "Have Fun!",
+							includeMarkdown( "www/help.md" )
+						)
 					)#,
 					
 					# tabItem(

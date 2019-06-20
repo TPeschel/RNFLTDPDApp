@@ -1,8 +1,6 @@
 source( "sources.R" )
 source( "funbox.R" )
 
-load( "data/all.RData" )
-
 #rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
 
 # meas = read.csv( "data/rnfltdiff_example.csv" ) # load the example
@@ -22,8 +20,8 @@ server <-
 		rv <- reactiveValues( )
 		
 		get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
-		get.cnts <- function(  ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
-		cnts.exist <- function(  ) { 0 < length( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) ) }
+		get.cnts <- function( ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
+		cnts.exist <- function( ) { 0 < length( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) ) }
 		
 		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
 		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
@@ -36,8 +34,8 @@ server <-
 		
 		rv [[ "TABLE_PERCENTILES" ]] <- 
 			data.frame(
-				SDS = c( NaN, qnorm( c( .01, .05, .500, .95, .99 ) ),NaN ),
-				CNT = c( NaN, 100. * c( .01, .05, .500, .95, .99 ), NaN )
+				SDS = c( NaN, c( -3 : 3 ),NaN ),
+				CNT = c( NaN, 100. * round( pnorm( c( -3 : 3 ) ), 4 ), NaN )
 			)
 		
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
@@ -125,7 +123,7 @@ server <-
 						cents = cents.
 					)
 				
-				norms <- calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline )
+				norms <- calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline, norms = rnfltdiffnorms )
 				
 				qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
 				
@@ -391,7 +389,7 @@ server <-
 							y = rv [[ "dataAgeAngle" ]]$angle,
 							z = cn, 
 							name = names( rv [[ "dataAgeAngle" ]]$cents )[ i ], 
-							opacity = .75,
+							opacity = input$ID_SI_OPACITY_AA,
 							cmin = -80,#min( rv$data2$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data2$cents[[ 3 ]], na.rm = T ), 
 							colorscale = hc
