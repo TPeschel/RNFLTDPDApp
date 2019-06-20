@@ -114,3 +114,38 @@ percentiles.color.palette <-
 		
 		cp[ 1 + perc.vec ]
 	}
+
+# heidelberg.palette <-
+# 	function( perc.vec ) {
+# 		
+# 		n  <- length( perc.vec )
+# 		cp <- rep_len( "indianred1", n )
+# 		cp[ abs( perc.vec - 50 ) < 49 ] <- "khaki1"
+# 		cp[ abs( perc.vec - 50 ) < 45 ] <- "palegreen"
+# 		cp
+# 	}
+
+heidelberg.palette <-
+	function( perc.vec ) {
+		
+		n  <- length( perc.vec )
+		cp <- rep_len( "#FF6A6A", n )
+		cp[ abs( perc.vec - 50 ) < 49 ] <- "#FFF68F"
+		cp[ abs( perc.vec - 50 ) < 45 ] <- "#98FB98"
+		cp[ abs( perc.vec - 50 ) < 1 ]  <- "#32CD32"
+		cp
+	}
+
+heidelberg.colorscale <-
+	function( i, perc.vec ) {
+		
+		hp <- heidelberg.palette( perc.vec = perc.vec )
+		
+		list(
+			c( 0, 1 ),
+			c( hp[ i ], hp[ i ] )
+		)
+	}
+
+#heidelberg.colorscale( 5, c( .1, 10, 60, 95, 99 ) )
+#heidelberg.palette( )

@@ -1,7 +1,7 @@
 source( "sources.R" )
 source( "funbox.R" )
 
-load( "data/all.RData" )
+load( "../data/all.RData" )
 
 #rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
 
@@ -16,13 +16,14 @@ rdiffs <- seq( -.1, +.1, length.out = length( ages ) )
 rdiffs.names <- as.character( round( rdiffs, 3 ) )
 empty.row <- data.frame( SDS = NaN, CNT = NaN )
 
-get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
-get.cnts <- function( i ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
-
 server <-
 	function( input, output, session ) {
 		
 		rv <- reactiveValues( )
+		
+		get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
+		get.cnts <- function(  ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
+		cnts.exist <- function(  ) { 0 < length( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) ) }
 		
 		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
 		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
@@ -48,7 +49,8 @@ server <-
 			data.frame( 
 				"ANGLE"      = format( angles, digits = 1 ),
 				"RNFLTD"     = unlist( visitor[ -c( 1,2 ) ] ),
-				"PERCENTILE" = qn )
+				"PERCENTILE" = qn 
+			)
 		
 		rv [[ "PERCENTILES_UPDATED" ]] <- F
 		
@@ -59,7 +61,8 @@ server <-
 			updateSliderInput(
 				session = session,
 				inputId = "ID_SI_AGE",
-				value = visitor [[ "age" ]] )
+				value = visitor [[ "age" ]]
+			)
 		)
 		
 		observeEvent(
@@ -67,15 +70,18 @@ server <-
 			updateSliderInput(
 				session = session,
 				inputId = "ID_SI_RADDIFF",
-				value = visitor [[ "radiusdiff" ]] )
+				value = visitor [[ "radiusdiff" ]]
+			)
 		)
 		
 		output$ID_TABLE_VISITOR <-
 			DT::renderDT( 
 				{
 					validate(
-						need( rv [[ "TABLE_VISITOR" ]],
-							  message = "no visitor data present" )
+						need( 
+							rv [[ "TABLE_VISITOR" ]],
+							message = "no visitor data present"
+						)
 					)
 					
 					DT::datatable(
@@ -95,7 +101,7 @@ server <-
 			eventExpr  = c( rv [[ "PERCENTILES_UPDATED" ]], input [[ "ID_SI_AGE" ]], input [[ "ID_SI_RADDIFF" ]] ),
 			handlerExpr = {
 			
-				if( 0 < length( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) ) ) {
+				if( cnts.exist( ) ) {
 					
 					cents. <-
 						lapply(
@@ -124,11 +130,16 @@ server <-
 				qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
 				
 				rv [[ "TABLE_VISITOR" ]] <-
+					data.frame( 
+						"ANGLE"      = format( angles, digits = 1 ),
+						"RNFLTD"     = unlist( visitor[ -c( 1,2 ) ] ),
+						"PERCENTILE" = qn 
+					)
+				
+				if( cnts.exist( ) ) 
+					rv [[ "TABLE_VISITOR" ]] <-
 					cbind( 
-						data.frame( 
-							"ANGLE"      = format( angles, digits = 1 ),
-							"RNFLTD"     = unlist( visitor[ -c( 1,2 ) ] ),
-							"PERCENTILE" = qn ),
+						rv [[ "TABLE_VISITOR" ]],
 						rv [[ "dataAngle" ]] [[ "cents" ]]
 					)
 			}
@@ -203,7 +214,6 @@ server <-
 				else  {
 					
 					cents. <- list( )
-					
 				}
 				rv [[ "dataRaddiffAngle" ]] <-
 					list(
@@ -223,15 +233,29 @@ server <-
 		output$PLOT_RNFLTD_2D <-
 			renderPlotly( {
 				
+				# validate(
+				# 	need(
+				# 		0 < length( get.cnts( ) ),
+				# 		"no percentiles given"
+				# 		)
+				# 	)
+				
 				plt <-
 					plot_ly( ) %>%
 						layout(
-							xaxis = list( title = "ang [°]" ),
+							xaxis = list( title = "ang [°]", range = c( 0, 360 ) ),
 							yaxis = list( title = "RNFLT OS-OD [µm]" )
 						)
 					
-				cp <- percentiles.color.palette( as.numeric( gsub( "%", "", names( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) ) )
+				#cp <- percentiles.color.palette( as.numeric( gsub( "%", "", names( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) ) )
 				
+				hp <- heidelberg.palette( get.cnts( ) );
+				
+				print( get.cnts( ) )
+				
+				print( hp )
+				
+				if( 0 < length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAngle" ]]$cents[[ i ]]
@@ -242,17 +266,20 @@ server <-
 							x = rv [[ "dataAngle" ]]$angle,
 							y = cn,
 							name = names( rv [[ "dataAngle" ]] [[ "cents" ]] )[ i ],
-							line = list( color = cp[ i ] )
+							color = i,
+							colors = hp
 						)
 				}
-				
+
 				plt <-
-					add_lines(
+					add_trace(
 						p = plt,
+						type = "scatter",
+						mode = "lines",
 						x = rv [[ "TABLE_VISITOR" ]] [[ "ANGLE" ]],
 						y = rv [[ "TABLE_VISITOR" ]] [[ "RNFLTD" ]],
 						name = paste0( "visitor:\nage:", visitor [[ "age" ]], "\nrdiff: ", visitor [[ "radiusdiff" ]] ),
-						line = list( color = "black" )
+						color = I( "black" )
 					)
 				
 				plt
@@ -275,13 +302,17 @@ server <-
 				
 				#cs <- clrscle( )
 
+				if( 0 < length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) ) {
 
 					cn <- rv [[ "dataRaddiffAngle" ]]$cents[[ i ]]
 					
+					hc <- heidelberg.colorscale( i, get.cnts( ) )
+					
 					plt <-
-						add_surface(
+						add_trace(
 							p = plt,
+							type = "surface",
 							x = rv [[ "dataRaddiffAngle" ]]$radius.difference,
 							y = rv [[ "dataRaddiffAngle" ]]$angle,
 							z = cn, 
@@ -290,13 +321,13 @@ server <-
 							opacity = input$ID_SI_OPACITY_RDA,
 							cmin = -80,#min( rv$data1$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data1$cents[[ 3 ]], na.rm = T ),
-							colorscale = clrscl.monochrome( na.omit( .01 * rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) [ i ] )
-							#colorscale = cs
+							colorscale = hc
 						)
 				}
 				
-				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
+				cp <- heidelberg.palette( get.cnts( ) )
 				
+				if( 0 < length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAngle" ]]$cents[[ i ]]
@@ -344,12 +375,13 @@ server <-
 						)
 					)
 
-				cs <- clrscl( )
-				
+				if( 0 < length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAgeAngle" ]]$cents[[ i ]]
 					
+					hc <- heidelberg.colorscale( i, get.cnts( ) )
+
 					plt <- 
 						add_trace( 
 							p = plt, 
@@ -362,12 +394,13 @@ server <-
 							opacity = .75,
 							cmin = -80,#min( rv$data2$cents[[ 1 ]], na.rm = T ),
 							cmax = +80,#max( rv$data2$cents[[ 3 ]], na.rm = T ), 
-							colorscale = cs
+							colorscale = hc
 						)
 				}
 
-				cp <- clrspal( length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
+				cp <- heidelberg.palette( get.cnts( ) )
 
+				if( 0 < length( rv [[ "dataAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataAngle" ]] [[ "cents" ]] ) ) {
 					
 					cn <- rv [[ "dataAngle" ]]$cents[[ i ]]
