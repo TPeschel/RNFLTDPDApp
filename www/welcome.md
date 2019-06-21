@@ -1,5 +1,5 @@
-# Welcome to Retinal Nerve Fiber Thickness Difference Percentiles Demonstrator App
+# Welcome to Retinal Nerve Fiber Layer Thickness Difference Percentiles Demonstrator App
 
-## RNFTDPDApp
+## RNFLTDPDApp
 is a tool that ...
 

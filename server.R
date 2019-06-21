@@ -1,12 +1,6 @@
 source( "sources.R" )
 source( "funbox.R" )
 
-#rnfltdiff = visitor.data.raw[ -c( 1, 2 ) ]
-
-# meas = read.csv( "data/rnfltdiff_example.csv" ) # load the example
-# 
-# rnfltdiff = meas[ -c( 1, 2 ) ]
-
 angles <- seq( 0, 360, length.out = 768 )
 angle.names <- as.character( round( angles, 2 ) )
 ages   <- c( 20 : 80 )
@@ -20,8 +14,10 @@ server <-
 		rv <- reactiveValues( )
 		
 		get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
-		get.cnts <- function( ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
-		cnts.exist <- function( ) { 0 < length( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) ) }
+		
+		get.cnts     <- function( ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
+		get.cnts.len <- function( ) { length( get.cnts( ) ) }
+		cnts.exist   <- function( ) { 0 < get.cnts.len( ) }
 		
 		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
 		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
@@ -222,6 +218,30 @@ server <-
 			}
 		)
 
+		output$CB_AA <-
+			renderUI( 
+				{
+					checkboxGroupInput(
+						"CB_AA",
+						"select percentiles surface to show",
+						choices = paste0( get.cnts( ), "%" ),
+						selected = paste0( get.cnts( ), "%" )
+					)
+				}
+			)
+		
+		output$CB_RDA <-
+			renderUI( 
+				{
+					checkboxGroupInput(
+						"CB_RDA",
+						"select percentiles surface to show",
+						choices = paste0( get.cnts( ), "%" ),
+						selected = paste0( get.cnts( ), "%" )
+					)
+				}
+			)
+		
 		output$PLOT_RNFLTD_2D_HEIDELBERG <-
 			renderPlot( {
 				difference.colorplot( visitor[ -c( 1, 2 ) ], input$ID_SI_AGE, input$ID_SI_RADDIFF )
@@ -303,24 +323,27 @@ server <-
 				if( 0 < length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataRaddiffAngle" ]] [[ "cents" ]] ) ) {
 
-					cn <- rv [[ "dataRaddiffAngle" ]]$cents[[ i ]]
-					
-					hc <- heidelberg.colorscale( i, get.cnts( ) )
-					
-					plt <-
-						add_trace(
-							p = plt,
-							type = "surface",
-							x = rv [[ "dataRaddiffAngle" ]]$radius.difference,
-							y = rv [[ "dataRaddiffAngle" ]]$angle,
-							z = cn, 
-							name = names( rv [[ "dataRaddiffAngle" ]]$cents )[ i ], 
-							showscale = i == 1,
-							opacity = input$ID_SI_OPACITY_RDA,
-							cmin = -80,#min( rv$data1$cents[[ 1 ]], na.rm = T ),
-							cmax = +80,#max( rv$data1$cents[[ 3 ]], na.rm = T ),
-							colorscale = hc
-						)
+					if( names( rv [[ "dataRaddiffAngle" ]]$cents )[ i ] %in% input$CB_RDA ) {
+						
+						cn <- rv [[ "dataRaddiffAngle" ]]$cents[[ i ]]
+						
+						hc <- heidelberg.colorscale( i, get.cnts( ) )
+						
+						plt <-
+							add_trace(
+								p = plt,
+								type = "surface",
+								x = rv [[ "dataRaddiffAngle" ]]$radius.difference,
+								y = rv [[ "dataRaddiffAngle" ]]$angle,
+								z = cn, 
+								name = names( rv [[ "dataRaddiffAngle" ]]$cents )[ i ], 
+								showscale = i == 1,
+								opacity = input$ID_SI_OPACITY_RDA,
+								cmin = -80,#min( rv$data1$cents[[ 1 ]], na.rm = T ),
+								cmax = +80,#max( rv$data1$cents[[ 3 ]], na.rm = T ),
+								colorscale = hc
+							)
+					}
 				}
 				
 				cp <- heidelberg.palette( get.cnts( ) )
@@ -376,24 +399,27 @@ server <-
 				if( 0 < length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) )
 				for( i in 1 : length( rv [[ "dataAgeAngle" ]] [[ "cents" ]] ) ) {
 					
-					cn <- rv [[ "dataAgeAngle" ]]$cents[[ i ]]
+					if( names( rv [[ "dataAgeAngle" ]]$cents )[ i ] %in% input$CB_AA ) {
 					
-					hc <- heidelberg.colorscale( i, get.cnts( ) )
-
-					plt <- 
-						add_trace( 
-							p = plt, 
-							showscale = F,#i == 1, 
-							type = "surface", 
-							x = rv [[ "dataAgeAngle" ]]$age, 
-							y = rv [[ "dataAgeAngle" ]]$angle,
-							z = cn, 
-							name = names( rv [[ "dataAgeAngle" ]]$cents )[ i ], 
-							opacity = input$ID_SI_OPACITY_AA,
-							cmin = -80,#min( rv$data2$cents[[ 1 ]], na.rm = T ),
-							cmax = +80,#max( rv$data2$cents[[ 3 ]], na.rm = T ), 
-							colorscale = hc
-						)
+						cn <- rv [[ "dataAgeAngle" ]]$cents[[ i ]]
+						
+						hc <- heidelberg.colorscale( i, get.cnts( ) )
+						
+						plt <- 
+							add_trace( 
+								p = plt, 
+								showscale = F,#i == 1, 
+								type = "surface", 
+								x = rv [[ "dataAgeAngle" ]]$age, 
+								y = rv [[ "dataAgeAngle" ]]$angle,
+								z = cn, 
+								name = names( rv [[ "dataAgeAngle" ]]$cents )[ i ], 
+								opacity = input$ID_SI_OPACITY_AA,
+								cmin = -80,#min( rv$data2$cents[[ 1 ]], na.rm = T ),
+								cmax = +80,#max( rv$data2$cents[[ 3 ]], na.rm = T ), 
+								colorscale = hc
+							)
+					}
 				}
 
 				cp <- heidelberg.palette( get.cnts( ) )

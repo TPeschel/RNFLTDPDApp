@@ -233,7 +233,11 @@ ui <-
 										value = .75
 									),
 									width = 12
-									),
+								),
+								box(
+									uiOutput( "CB_RDA" ),
+									width = 12
+								),
 								width = 2
 							),
 							
@@ -266,6 +270,10 @@ ui <-
 										step = .01,
 										value = .75
 									),
+									width = 12
+								),
+								box(
+									uiOutput( "CB_AA" ),
 									width = 12
 								),
 								width = 2
