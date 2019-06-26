@@ -166,6 +166,7 @@ server <-
 					
 					cents. <- list( )
 				}
+				
 				rv [[ "dataAgeAngle" ]] <-
 					list( 
 						age   = ages,
@@ -197,18 +198,12 @@ server <-
 						)
 					
 					names( cents. ) <- paste0( na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ), "%" )
-					
-					#print( cents. )
-					
-		
-					# colnames( rv$data1$cents ) < rv$data2$radius.difference
-					# rownames( rv$data1$cents ) <- rv$data2$angle
-					#print( rv$data1 )
 				}
 				else  {
 					
 					cents. <- list( )
 				}
+				
 				rv [[ "dataRaddiffAngle" ]] <-
 					list(
 						radius.difference = rdiffs,
