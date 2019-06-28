@@ -17,7 +17,7 @@
 
 # Note: function plot.rnflt.diff.sectors.with.norms needs libraries plotrix and gamlss.dist
 
-check.install <- function(p)
+check.install <- function(p){
 	if(!require(p, character.only=TRUE))
 	{
 		cat("\nR package", p,  "is needed in function plot.rnflt.diff.sectors.with.norms. Press ENTER to install it. This needs to be done only once.")
@@ -25,7 +25,7 @@ check.install <- function(p)
 		install.packages(p, repos="https://cran.wu.ac.at/")
 		require(p)
 		cat("\n\nPackage", p, "successfully installed.\n\n")
-	}
+	}}
 	
 check.install( "plotrix" )
 check.install( "gamlss.dist" )
@@ -234,7 +234,7 @@ plot.rnflt.diff.sectors.with.norms <- function(rnfltdiff, age, radiusdiff=0)
 	par(op)
 }
 
-difference.colorplot <- function(rnfltdiff, age, radiusdiff=0, smoothing=smooth.spline, ...)
+difference.colorplot <- function(rnfltdiff, age, radiusdiff=0, smoothing=smooth.spline, ... )
 	# combines plot.rnflt.diff.sectors.with.norms and plot.rnflt.diff.with.norms
 	# in single plot
 {
