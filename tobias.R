@@ -1,6 +1,9 @@
 # rm( list =  ls( ) )
 # 
 ###
+require( "gamlss.dist" )
+require( "plotrix" )
+
 # ply( x, c( c1, c2, c3 ) ) 
 # ret x * ( x * ( x * c3 + c2 ) + c1 ) = c1 * x + c2 * x^2 + c3 * x^3
 ## 

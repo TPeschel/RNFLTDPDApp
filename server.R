@@ -37,11 +37,11 @@ server <-
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
 		params <- 
 			calculate.normative.distribution(
-				age = visitor [[ "age" ]], 
-				rdf = visitor [[ "radiusdiff" ]],
-				angles = constants$angles,
+				age       = visitor [[ "age" ]], 
+				rdf       = visitor [[ "radiusdiff" ]],
+				angles    = constants$angles,
 				smoothing = smooth.spline, 
-				params = parameters$rnflt_diff_params )
+				params    = parameters$rnflt_diff_params )
 
 		qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), params$mu, params$sigma ), 3 )
 		

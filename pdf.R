@@ -8,8 +8,8 @@ add.pdf.format <-
 	function(
 		doc.type    = "default",
 		dpi         = 312, 
-		os.xleft    = 280,
-		od.xleft    = 1530,
+		od.xleft    = 280,
+		os.xleft    = 1530,
 		width       = 768,
 		bottom      = 2265,
 		height      = 257,
@@ -24,8 +24,8 @@ add.pdf.format <-
 			list( 
 				doc.type    = doc.type,
 				dpi         = dpi,
-				os.xleft    = os.xleft,
 				od.xleft    = od.xleft,
+				os.xleft    = os.xleft,
 				width       = width,
 				bottom      = bottom,
 				height      = height,
