@@ -16,11 +16,11 @@ get.thickness.plot <-
 		mat[ ( ybottom - height ) : ybottom, xleft : ( xleft + 768 ), ]
 	}
 
-# takes the thickness plot as 4-D matrix and extracts 
+# takes the thickness plot as 4-D matrix and extracts
 # the median of the black line, column by column;
 # mat needs to contain the precise image patch with the plot,
 # and the y-coordinates need to be (0, 300)
-matrix2thickness <- 
+matrix2thickness <-
 	function( mat ) {
 		# black pixels: all 3 color channels are 0:
 		m <- mat[,,1] == 0 & mat[,,2] == 0 & mat[,,3] == 0
@@ -37,20 +37,20 @@ extract.thickness <-
 # and extracts thicknesses of OS and OD from the thickness curves
 #
 # filename: file name of the pdf file
-spectralis.pdf.to.thicknesses <- 
+spectralis.pdf.to.thicknesses <-
 	function( filename ) {
-		
+
 		mat <- pdf2mat( filename )
-		
+
 		os  <- extract.thickness(  280, mat = mat )
 		od  <- extract.thickness( 1530, mat = mat )
-		
+
 		# the OD thickness plot is one pixel "shorter":
-		
+
 		od[ 1 ] <- od[ 768 ]
-		
+
 		angle <- seq( 0, 360, length = length( os ) )
-		
+
 		as.data.frame( cbind( angle, os, od ) )
 	}
 
@@ -94,50 +94,86 @@ pdf.formats
 xtrct.plot.from.pdf <-
 	function( fname, doc.type = "spectralis" ) {
 	
-		d <- pdf.formats[[ doc.type ]]
-		
-		a <- aperm( pdf_render_page( fname, dpi = d [[ "dpi" ]] ), c( 3, 2, 1 ) )
-		
-		os <- a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]],  d [[ "os.xleft" ]] : ( d [[ "os.xleft" ]] + d [[ "width" ]] ), ]
-		
-		od <- a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]],  d [[ "od.xleft" ]] : ( d [[ "od.xleft" ]] + d [[ "width" ]] ), ]
+		##########################################################################################################
+		# some functions
+		##########################################################################################################
+		graph         <- function( a, d, oc = "os" ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]],  d [[ paste0( oc, ".xleft" ) ]] : ( d [[ paste0( oc, ".xleft" ) ]] + d [[ "width" ]] ), ]
 
-		osnz <- os[ , , 1 ] == 0 & os[ , , 2 ] == 0 & os[ , , 3 ] == 0
+		black.pix     <- function( oc ) oc[ , , 1 ] == 0 & oc[ , , 2 ] == 0 & oc[ , , 3 ] == 0
 		
-		odnz <- od[ , , 1 ] == 0 & od[ , , 2 ] == 0 & od[ , , 3 ] == 0
+		pos.of.blacks <- function( v ) median( which( v ) )
 		
-		nr <- nrow( a )
+		get.y         <- function( doc, onz, nr = nr ) doc [[ "plot.height" ]] * ( nr -  apply( onz, 2, pos.of.blacks ) ) / nr
 		
-		osy <- d [[ "plot.height" ]] * ( nr -  apply( osnz, 2, function( v ) median( which( v ) ) ) ) / nr
+		thcknss       <- function( content, doc.info, oculus, nrows ) {
+			
+			y  <- get.y( doc.info, black.pix( graph( content, doc.info, oculus ) ), nrows )
+			
+			if( oculus == "od" && doc.type %in% c( "default", "spectralis" ) ) {
+				
+				y[ 1 ] <- y[ 768 ]
+			}
+			
+			y
+		}
+
+		##########################################################################################################
+		# use the functions
+		##########################################################################################################
 		
-		ody <- d [[ "plot.height" ]] * ( nr -  apply( odnz, 2, function( v ) median( which( v ) ) ) ) / nr
+		doc.info     <- pdf.formats[[ doc.type ]]
 		
-		ody[ 1 ] <- ody[ 768 ]
-	
-		angle = seq( 0, 360, length = length( osy ) )
+		content      <- aperm( pdf_render_page( fname, dpi = doc.info [[ "dpi" ]] ), c( 3, 2, 1 ) )
+
+		nr           <- nrow( content )
+
+		osy          <- thcknss( content, doc.info, "os", nr )
 		
-		ret <- as.data.frame( cbind( angle, osy, ody ) )
+		ody          <- thcknss( content, doc.info, "od", nr )
+		
+		angle        <- seq( 0, 360, length = length( osy ) )
+		
+		ret          <- as.data.frame( cbind( angle, osy, ody ) )
 		
 		names( ret ) <- c( "angle", "os", "od" )
 		
 		ret
 	}
 
-
-start.a <- Sys.time( )
+start <- Sys.time( )
 s1 <- spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
-stop.a <- Sys.time( )
-stop.a - start.a
+Sys.time( ) - start
 
-start.b <- Sys.time( )
-s2 <- xtrct.plot.from.pdf( fname = "visitor/LI01274671_Beispiel.pdf", doc.type = "spectralis" )
-stop.b <- Sys.time( )
-stop.b - start.b
+start <- Sys.time( )
+s <- xtrct.plot.from.pdf( fname = "visitor/LI01274671_Beispiel.pdf", doc.type = "spectralis" )
+Sys.time( ) - start
 
 subplot(
-	plot_ly( s1, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ),
-	plot_ly( s1, x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
-	plot_ly( s2, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ),
-	plot_ly( s2, x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
+	subplot(
+		plot_ly( s, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ),
+		plot_ly( s, x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
+		nrows = 1
+	),
+	subplot(
+		plot_ly(   s, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ) %>%
+			add_trace( s, x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
+		plot_ly(   s, x = ~ angle, y = ~ os - od, type = "scatter", mode = "line", name = "OS - OD" ) %>%
+			add_trace( s, x = ~ angle, y = ~ abs( os - od ), type = "scatter", mode = "line", name = "| OS - OD |" ),
+		nrows = 2
+	),
 	nrows = 2
 )
+
+start <- Sys.time( )
+s <- xtrct.plot.from.pdf( fname = "visitor/LI02227755_Beispiel.pdf", doc.type = "spectralis" )
+Sys.time( ) - start
+
+
+subplot(
+	plot_ly(   s, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ) %>%
+		add_trace( s, x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
+	plot_ly(   s, x = ~ angle, y = ~ os - od, type = "scatter", mode = "line", name = "OS - OD" ) %>%
+		add_trace( s, x = ~ angle, y = ~ abs( os - od ), type = "scatter", mode = "line", name = "| OS - OD |" ),
+	nrows = 2
+)
+

@@ -147,5 +147,86 @@ heidelberg.colorscale <-
 		)
 	}
 
-#heidelberg.colorscale( 5, c( .1, 10, 60, 95, 99 ) )
-#heidelberg.palette( )
+add.pdf.format <-
+	function(
+		doc.type    = "spectralis",
+		dpi         = 312, 
+		os.xleft    = 280,
+		od.xleft    = 1530,
+		width       = 768,
+		bottom      = 2265,
+		height      = 257,
+		plot.height = 300 ) {
+		
+		if( ! exists( "pdf.formats" ) ) {
+			
+			pdf.formats <<- NULL
+		}
+		
+		pdf.formats[[ doc.type ]] <<- 
+			list( 
+				doc.type    = doc.type,
+				dpi         = dpi,
+				os.xleft    = os.xleft,
+				od.xleft    = od.xleft,
+				width       = width,
+				bottom      = bottom,
+				height      = height,
+				plot.height = plot.height
+			)
+	}
+
+add.pdf.format( )
+
+add.pdf.format( "default", 312, 280, 1530, 768, 2265, 257, 300 )
+
+pdf.formats
+
+xtrct.plot.from.pdf <-
+	function( fname, doc.type = "spectralis" ) {
+		
+		##########################################################################################################
+		# some functions
+		##########################################################################################################
+		graph         <- function( a, d, oc = "os" ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]],  d [[ paste0( oc, ".xleft" ) ]] : ( d [[ paste0( oc, ".xleft" ) ]] + d [[ "width" ]] ), ]
+		
+		black.pix     <- function( oc ) oc[ , , 1 ] == 0 & oc[ , , 2 ] == 0 & oc[ , , 3 ] == 0
+		
+		pos.of.blacks <- function( v ) median( which( v ) )
+		
+		get.y         <- function( doc, onz, nr = nr ) doc [[ "plot.height" ]] * ( nr -  apply( onz, 2, pos.of.blacks ) ) / nr
+		
+		thcknss       <- function( content, doc.info, oculus, nrows ) {
+			
+			y  <- get.y( doc.info, black.pix( graph( content, doc.info, oculus ) ), nrows )
+			
+			if( oculus == "od" && doc.type %in% c( "default", "spectralis" ) ) {
+				
+				y[ 1 ] <- y[ 768 ]
+			}
+			
+			y
+		}
+		
+		##########################################################################################################
+		# use the functions
+		##########################################################################################################
+		
+		doc.info     <- pdf.formats[[ doc.type ]]
+		
+		content      <- aperm( pdf_render_page( fname, dpi = doc.info [[ "dpi" ]] ), c( 3, 2, 1 ) )
+		
+		nr           <- nrow( content )
+		
+		osy          <- thcknss( content, doc.info, "os", nr )
+		
+		ody          <- thcknss( content, doc.info, "od", nr )
+		
+		angle        <- seq( 0, 360, length = length( osy ) )
+		
+		ret          <- as.data.frame( cbind( angle, osy, ody ) )
+		
+		names( ret ) <- c( "angle", "os", "od" )
+		
+		ret
+	}
