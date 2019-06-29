@@ -57,13 +57,13 @@ spectralis.pdf.to.thicknesses <-
 		r
 	}
 
-pdf.data <-
-	spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
-
-require( "plotly" )
-
-subplot(
-	plot_ly( pdf.data, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ) %>%
-		add_trace( x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
-	nrows = 1
-)
+# pdf.data <-
+# 	spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
+# 
+# require( "plotly" )
+# 
+# subplot(
+# 	plot_ly( pdf.data, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ) %>%
+# 		add_trace( x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
+# 	nrows = 1
+# )

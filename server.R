@@ -1,12 +1,13 @@
-source( "sources.R" )
+source( "tobias.R" )
 source( "funbox.R" )
-
-angles <- seq( 0, 360, length.out = 768 )
-angle.names <- as.character( round( angles, 2 ) )
+#angles <- seq( 0, 360, length.out = 768 )
+#angle.names <- as.character( round( angles, 2 ) )
 ages   <- c( 20 : 80 )
 rdiffs <- seq( -.1, +.1, length.out = length( ages ) )
 rdiffs.names <- as.character( round( rdiffs, 3 ) )
 empty.row <- data.frame( SDS = NaN, CNT = NaN )
+
+visitor <- examples$rnfltdiff_example
 
 server <-
 	function( input, output, session ) {
@@ -34,13 +35,19 @@ server <-
 			)
 		
 		#	qn = sapply(c(0.01, 0.05, 0.5, 0.95, 0.99), function(x) qnorm(x, norms$mu, norms$sigma))
-		norms = calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline, norms = rnfltdiffnorms )
+		params <- 
+			calculate.normative.distribution(
+				age = visitor [[ "age" ]], 
+				rdf = visitor [[ "radiusdiff" ]],
+				angles = constants$angles,
+				smoothing = smooth.spline, 
+				params = parameters$rnflt_diff_params )
 
-		qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
+		qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), params$mu, params$sigma ), 3 )
 		
 		rv [[ "TABLE_VISITOR" ]] <-
 			data.frame( 
-				"ANGLE"      = format( angles, digits = 1 ),
+				"ANGLE"      = format( constants$angles, digits = 1 ),
 				"RNFLTD"     = unlist( visitor[ -c( 1,2 ) ] ),
 				"PERCENTILE" = qn 
 			)
@@ -100,7 +107,14 @@ server <-
 						lapply(
 							.01 * na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ),
 							function( cent ) {
-								norm.dist <- calculate.normative.distribution( age = input$ID_SI_AGE, radiusdiff = input$ID_SI_RADDIFF, norms = rnfltdiffnorms )
+								norm.dist <- 
+									calculate.normative.distribution( 
+										age = input$ID_SI_AGE, 
+										rdf = input$ID_SI_RADDIFF,
+										angles = constants$angles,
+										smoothing = smooth.spline,
+										params = parameters$rnflt_diff_params )
+								
 								qnorm( p = cent, mean = norm.dist$mu, sd = norm.dist$sigma )
 							}
 						)
@@ -114,17 +128,23 @@ server <-
 				
 				rv [[ "dataAngle" ]] <-
 					list( 
-						angle = angles,
+						angle = constants$angles,
 						cents = cents.
 					)
 				
-				norms <- calculate.normative.distribution( visitor [[ "age" ]], visitor [[ "radiusdiff" ]], smoothing = smooth.spline, norms = rnfltdiffnorms )
+				params <- 
+					calculate.normative.distribution(
+						age = visitor [[ "age" ]], 
+						rdf = visitor [[ "radiusdiff" ]],
+						angles = constants$angles,
+						smoothing = smooth.spline,
+						params = parameters$rnflt_diff_params )
 				
-				qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), norms$mu, norms$sigma ), 3 )
+				qn <- 100 * round( pnorm( unlist( visitor[ -c( 1,2 ) ] ), params$mu, params$sigma ), 3 )
 				
 				rv [[ "TABLE_VISITOR" ]] <-
 					data.frame( 
-						"ANGLE"      = format( angles, digits = 1 ),
+						"ANGLE"      = format( constants$angles, digits = 1 ),
 						"RNFLTD"     = unlist( visitor[ -c( 1,2 ) ] ),
 						"PERCENTILE" = qn 
 					)
@@ -152,7 +172,14 @@ server <-
 								sapply(
 									ages,
 									function( age ) {
-										norm.dist <- calculate.normative.distribution( age = age, radiusdiff = input$ID_SI_RADDIFF, norms = rnfltdiffnorms )
+										norm.dist <- 
+											calculate.normative.distribution( 
+												age = age,
+												rdf = input$ID_SI_RADDIFF,
+												angles = constants$angles,
+												smoothing = smooth.spline,
+												params = parameters$rnflt_diff_params )
+										
 										qnorm( p = cent, mean = norm.dist$mu, sd = norm.dist$sigma )
 									}
 								)
@@ -169,7 +196,7 @@ server <-
 				rv [[ "dataAgeAngle" ]] <-
 					list( 
 						age   = ages,
-						angle = angles,
+						angle = constants$angles,
 						cents = cents.
 					)
 			} 
@@ -189,7 +216,14 @@ server <-
 								sapply(
 									rdiffs,
 									function( rdiff ) {
-										norm.dist <- calculate.normative.distribution( age = input$ID_SI_AGE, radiusdiff = rdiff, norms = rnfltdiffnorms )
+										norm.dist <-
+											calculate.normative.distribution( 
+												age = input$ID_SI_AGE, 
+												rdf = rdiff,
+												angles = constants$angles,
+												smoothing = smooth.spline, 
+												params = parameters$rnflt_diff_params )
+										
 										qnorm( p = cent, mean = norm.dist$mu, sd = norm.dist$sigma )
 									}
 								)
@@ -206,7 +240,7 @@ server <-
 				rv [[ "dataRaddiffAngle" ]] <-
 					list(
 						radius.difference = rdiffs,
-						angle = angles,
+						angle = constants$angles,
 						cents = cents.
 					)
 			}
@@ -238,7 +272,7 @@ server <-
 		
 		output$PLOT_RNFLTD_2D_HEIDELBERG <-
 			renderPlot( {
-				difference.colorplot( visitor[ -c( 1, 2 ) ], input$ID_SI_AGE, input$ID_SI_RADDIFF )
+				difference.colorplot( visitor[ -c( 1, 2 ) ], input$ID_SI_AGE, input$ID_SI_RADDIFF, smooth.spline, parameters$rnflt_diff_params, parameters$sector_abs_rnflt_diff_params )
 #				difference.colorplot( visitor[ -c( 1, 2 ) ], visitor [[ "age" ]], visitor [[ "radiusdiff" ]] )
 			} )
 		

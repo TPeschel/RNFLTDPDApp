@@ -17,6 +17,13 @@
 
 # Note: function plot.rnflt.diff.sectors.with.norms needs libraries plotrix and gamlss.dist
 
+constants <<-
+	list( 
+		angles  = seq( 0, 360, length = 768 ),
+		cents   = c( 0.01, 0.05, 0.5, 0.95, 0.99 ),
+		sectors = c( "rnfltMeanG", "rnfltMeanT", "rnfltMeanTS", "rnfltMeanTI", "rnfltMeanN", "rnfltMeanNS", "rnfltMeanNI" )
+	)
+
 check.install <- function(p){
 	if(!require(p, character.only=TRUE))
 	{
@@ -30,21 +37,19 @@ check.install <- function(p){
 check.install( "plotrix" )
 check.install( "gamlss.dist" )
 
-### make sure to place the csv files into the current working directory, or modify this code:
-# if( ! exists("rnfltdiffnorms" ) )
-# 	rnfltdiffnorms <- read.csv( "data/rnflt_difference_norms.csv" )
-# 
-# if( ! exists( "sector.abs.rnfltdiffnorms" ) )
-# 	sector.abs.rnfltdiffnorms <- read.csv( "data/sector_abs_rnflt_difference_norms.csv", row.names = 1 )
-# 
-# if( ! exists( "visitor" ) )
-# 	visitor <- read.csv( "data/rnfltdiff_example.csv" )
+## make sure to place the csv files into the current working directory, or modify this code:
+if( ! exists("rnfltdiffnorms" ) )
+	rnfltdiffnorms <- read.csv( "../RNFLTDPDADATA/data/rnflt_difference_norms.csv" )
+
+if( ! exists( "sector.abs.rnfltdiffnorms" ) )
+	sector.abs.rnfltdiffnorms <- read.csv( "../RNFLTDPDADATA/data/sector_abs_rnflt_difference_norms.csv", row.names = 1 )
+
+if( ! exists( "visitor" ) )
+	visitor <- read.csv( "../RNFLTDPDADATA/data/rnfltdiff_example.csv" )
 # 
 # save( list = c( "rnfltdiffnorms", "sector.abs.rnfltdiffnorms", "visitor" ), file = "data/all.RData" )
 
-load( "data/all.RData" )
-
-sector.indices <- function(sector.label, n=768)
+sector.indices <- function( sector.label, n = 768 )
 # return TRUE for all measurement locations that belong to the sector
 # given by sector.label
 #
@@ -93,7 +98,7 @@ calculate.normative.distribution.sectors.absdiff <- function(
 	age, 
 	radiusdiff=0, 
 	sectors=c("rnfltMeanG", "rnfltMeanT", "rnfltMeanTS", "rnfltMeanTI", "rnfltMeanN", "rnfltMeanNS", "rnfltMeanNI"), 
-	norms = sector.abs.rnfltdiffnorms)
+	norms = sector.abs.rnfltdiffnorms )
 # like calculate.normative.distribution, but for sectors instead
 # of angles, and with absolute RNFLT differences instead of
 # RNFLT differences, and a Box-Cox t distribution
@@ -115,7 +120,7 @@ calculate.normative.distribution.sectors.absdiff <- function(
 	nus = norms$nu.intercept
 	taus = norms$tau.intercept
 	
-	selected = row.names(norms) %in% sectors
+	selected = rownames( norms ) %in% sectors
 	data.frame(mu=mus[selected], sigma=sigmas[selected], nu=nus[selected], tau=taus[selected], row.names=sectors)
 }
 
@@ -249,3 +254,9 @@ difference.colorplot.wrapper <-
 	difference.colorplot( rnfltdiff = visitor[ -c( 1, 2 ) ], age = visitor [[ "age" ]], radiusdiff = visitor [[ "radiusdiff" ]], smoothing = smoothing, ... )
 }
 
+# load( "data/parameters.RData" )
+# load( "data/examples.RData" )
+
+calculate.normative.distribution.sectors.absdiff( age = examples$rnfltdiff_example$age, radiusdiff = examples$rnfltdiff_example$radiusdiff, sectors = constants$sectors, norms = sector.abs.rnfltdiffnorms )
+
+difference.colorplot.wrapper(examples$rnfltdiff_example)

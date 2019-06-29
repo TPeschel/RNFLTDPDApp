@@ -1,0 +1,201 @@
+
+    -------
+    rebase |
+    -------
+
+commit c02f0bbb76a6f93b445e9c912763acec79f4fc21
+Author: Unknown <tpeschel@life.uni-leipzig.de>
+Date:   Sat Jun 29 19:04:25 2019 +0200
+
+    adapt shiny
+
+commit 6f78ec3038edf6484c140a0b3ac69581147f8bd6
+Author: TPeschel <tpeschel@life.uni-leipzig.de>
+Date:   Sat Jun 29 14:21:02 2019 +0200
+
+    ------------------------------------
+    need to be done for data protection |
+    ------------------------------------
+    
+    commit 2f0d48f41677b207ab8f91e0cfd96ad86fd54229
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 14:13:20 2019 +0200
+    
+        remove pdfs
+    
+    commit ba1dcf675b04b45dc776ee5f87127acdeae28b18
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 14:11:01 2019 +0200
+    
+        modify .gitignore
+    
+    commit 233bf05556f88202033be83e7a1beae390d4c80a
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 14:07:11 2019 +0200
+    
+        add pdf.R
+    
+    commit ae083ae030dac45cf20ffb4466c9083945adbde0
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 10:50:30 2019 +0200
+    
+        modularize funs
+    
+    commit d7dec9e6623444199bddc67293c77b5141089089
+    Merge: 0d50ceb 8651afe
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 00:08:08 2019 +0200
+    
+        Merge remote-tracking branch 'origin/master'
+    
+    commit 0d50ceb0a144c6f76b31feb50128426b5420f7ee
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 00:07:18 2019 +0200
+    
+        modify tobias pdf-xtrct-code
+    
+    commit 8651afe969fb6721c973ffc20cc1661489967604
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Sat Jun 29 00:07:18 2019 +0200
+    
+        modify tobias pdf-xtrct-code
+    
+    commit 2e4cc3fd8bc36f8b9d46ba8eb3ff2579236e1cbe
+    Author: TPeschel <TPeschel@IMISE.Uni-Leipzig.DE>
+    Date:   Fri Jun 28 15:05:00 2019 +0200
+    
+        pdf again
+    
+    commit b440900b244673e4324912db03aae4c327fe0c7d
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Fri Jun 28 15:04:13 2019 +0200
+    
+        check pdf staff
+    
+    commit a2e666b65aa160f0f1bbd5974f6e4d5d9614a279
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Wed Jun 26 21:19:31 2019 +0200
+    
+        edit gitignore
+    
+    commit 3894ca72c73e8bfde3fdb49d9607db03443f3a54
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Wed Jun 26 21:18:18 2019 +0200
+    
+        minor changes
+    
+    commit 1f21008bc1a907d2a6d3abed5dead0bd24762e69
+    Author: Thomas Peschel <tpeschel@imise.uni-leipzig.de>
+    Date:   Fri Jun 21 12:13:17 2019 +0200
+    
+        add dynamic checkboxes
+    
+    commit 23027953dad75c9ab0071568379ca469f82e762c
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Thu Jun 20 20:02:20 2019 +0200
+    
+        move load all to source.R
+    
+    commit 393cafa08970c3cee0a3189aa4239c1b217dc5b9
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Thu Jun 20 13:04:41 2019 +0200
+    
+        destroy data
+    
+    commit 027c2bd91788172af205589ec2cb0bbb0d99511d
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Thu Jun 20 11:40:21 2019 +0200
+    
+        fix heidelbergpalette
+    
+    commit a3489d61515e2c659d43160f8b1ce92fe6d636af
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Wed Jun 19 16:43:41 2019 +0200
+    
+        hd
+    
+    commit 8113540da02ebc9a3116d0590fa89ae7085b2622
+    Author: Thomas Peschel <tpeschel@imise.uni-leipzig.de>
+    Date:   Wed Jun 19 15:03:09 2019 +0200
+    
+        fix colors
+    
+    commit 5f5bf0ef9042a88770d91ae2930b877b539edf95
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Wed Jun 19 11:11:58 2019 +0200
+    
+        fix color palettes
+    
+    commit 55fec60354e0f66e764d5a92ddaa7d877f09de51
+    Author: Thomas Peschel <tpeschel@imise.uni-leipzig.de>
+    Date:   Tue Jun 18 16:13:06 2019 +0200
+    
+        fix color palettes for 3d and 2d
+    
+    commit 07e6ab27c7c08a454b319a093c42d9472bd2771b
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 16:33:23 2019 +0200
+    
+        fix cents problem
+    
+    commit ab411558e9d88907e2b2dcabef0780a6e54e9ab8
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 14:40:09 2019 +0200
+    
+        fix visitor age and rdiff valuebox
+    
+    commit 764003252adf5a9697f3682789dd1845bf4b04b7
+    Author: Thomas Peschel <tpeschel@imise.uni-leipzig.de>
+    Date:   Mon Jun 17 13:35:49 2019 +0200
+    
+        move load data
+    
+    commit f1988b1f3b34abd60ad5ef2431df5e386a2bb908
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 13:28:48 2019 +0200
+    
+        fix norms problem
+    
+    commit c53a42bfbe8576c9e8a56af4b1398ea51f75c6a0
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 13:23:53 2019 +0200
+    
+        fix visitor problem
+    
+        fix visitor problem
+    
+    commit cf053f4de02680cb66a858a05f20ca280da44264
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 12:21:26 2019 +0200
+    
+        once again add README.md
+    
+    commit 439a5b94351347ff6bbc0f8ff1402b291f16ba0e
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 12:20:15 2019 +0200
+    
+        rename REAMDE.md to index.md
+    
+    commit f1b772fd110265fdc3e95e2ff75a69c15fbc31f7
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 12:17:07 2019 +0200
+    
+        Set theme jekyll-theme-dinky
+    
+    commit 812ee0d6979797052aa76e6eda07ef9571013f7d
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 12:13:51 2019 +0200
+    
+        Set theme jekyll-theme-modernist
+    
+    commit 6521cb1551dc4d36ed896e2d210b4fc34fbe5dd3
+    Author: Unknown <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 12:12:08 2019 +0200
+    
+        add files
+    
+    commit a496149488759c094e93fa83b4d11304471250be
+    Author: TPeschel <tpeschel@life.uni-leipzig.de>
+    Date:   Mon Jun 17 11:55:25 2019 +0200
+    
+        Initial commit
