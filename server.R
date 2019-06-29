@@ -12,13 +12,12 @@ server <-
 	function( input, output, session ) {
 		
 		rv <- reactiveValues( )
-		
-		get.cnt  <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
-		
+
+		get.cnt      <- function( i ) { rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] [ 1 + i ] }
 		get.cnts     <- function( ) { na.omit( rv [[ "TABLE_PERCENTILES" ]] [[ "CNT" ]] ) }
 		get.cnts.len <- function( ) { length( get.cnts( ) ) }
 		cnts.exist   <- function( ) { 0 < get.cnts.len( ) }
-		
+
 		updateSliderInput( session = session, inputId = "ID_SI_AGE",     value = visitor [[ "age" ]] )
 		updateSliderInput( session = session, inputId = "ID_SI_RADDIFF", value = visitor [[ "radiusdiff" ]] )
 		

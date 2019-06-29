@@ -47,42 +47,23 @@ spectralis.pdf.to.thicknesses <-
 		# the OD thickness plot is one pixel "shorter":
 		
 		thick.od[ 1 ] <- thick.od[ 768 ]
+		
 		angle = seq( 0, 360, length = length( thick.os ) )
-		cbind( angle, thick.os, thick.od )
+		
+		r <- as.data.frame( cbind( angle, thick.os, thick.od ) )
+		
+		names( r ) <- c( "angle", "os", "od" )
+		
+		r
 	}
 
 pdf.data <-
-	as.data.frame( spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" ) )
+	spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
 
 require( "plotly" )
 
 subplot(
-	plot_ly( pdf.data, x = ~ angle, y = pdf.data$thick.os, type = "scatter", mode = "line", name = "OS" ),
-	plot_ly( pdf.data, x = ~ angle, y = pdf.data$thick.od, type = "scatter", mode = "line", name = "OD" ),
+	plot_ly( pdf.data, x = ~ angle, y = ~ os, type = "scatter", mode = "line", name = "OS" ) %>%
+		add_trace( x = ~ angle, y = ~ od, type = "scatter", mode = "line", name = "OD" ),
 	nrows = 1
 )
-
-
-
-
-
-#### this was used to determine left eye location:
-if( ! exists( "aa" ) ) {
-	aa = pdf2mat( "visitor/LI01274671_Beispiel.pdf" )
-}
-?pdf2mat
-plot(0:1, 0:1, type='n')
-rasterImage(aa[1900:2200, 201:1100, ], 0, 0, 1, 1)
-rasterImage(aa, 0, 0, 1, 1)
-~ l = locator(1)
-~ print(l)
-
-~ xnew = round(dim(aa)[2] * l$x)
-~ ynew = round(dim(aa)[1] * (1-l$y))
-
-~ plt <- function(xnew, ynew, height=300)
-~ 	rasterImage(aa[(ynew-height):ynew, xnew:(xnew+768), ], 0, 0, 1, 1)
-
-~ plt(xnew, ynew)
-
-results: lower left pixel of left eye: 280,2265; width was fixed to 768 by resolution; height: 257
