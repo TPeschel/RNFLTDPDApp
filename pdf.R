@@ -36,14 +36,12 @@ add.pdf.format <-
 xtrct.plot.from.pdf <-
 	function( fname, doc.type = "default" ) {
 		
-		fname = "visitor/LI01274671_Beispiel.pdf"
-		
 		##########################################################################################################
 		# some functions
 		##########################################################################################################
-		graph          <- function( a, d, oc = "os" ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]], d [[ paste0( oc, ".xleft" ) ]] : ( d [[ paste0( oc, ".xleft" ) ]] + d [[ "width" ]] ), ]
+		graph          <- function( a, d, o ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]], d [[ paste0( o, ".xleft" ) ]] : ( d [[ paste0( o, ".xleft" ) ]] + d [[ "width" ]] ), ]
 		
-		mask.black.pix <- function( oc ) oc[ , , 1 ] == 0 & oc[ , , 2 ] == 0 & oc[ , , 3 ] == 0
+		mask.black.pix <- function( o ) o[ , , 1 ] == 0 & o[ , , 2 ] == 0 & o[ , , 3 ] == 0
 		
 		pos.of.blacks  <- function( blcks ) median( which( blcks ) )
 		
@@ -79,9 +77,9 @@ xtrct.plot.from.pdf <-
 		
 		angle        <- seq( 0, 360, length = length( osy ) )
 		
-		ret          <- as.data.frame( cbind( angle, osy, ody ) )
+		ret          <- as.data.frame( cbind( angle, ody, osy ) )
 		
-		names( ret ) <- c( "angle", "os", "od" )
+		names( ret ) <- c( "angle", "od", "os" )
 		
 		ret
 	}
