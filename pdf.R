@@ -6,14 +6,17 @@ require( "pdftools" )
 
 add.pdf.format <-
 	function(
-		doc.type    = "default",
-		dpi         = 312, 
-		od.xleft    = 280,
-		os.xleft    = 1530,
-		width       = 768,
-		bottom      = 2265,
-		height      = 257,
-		plot.height = 300 ) {
+		doc.type       = "default",
+		dpi            = 312, 
+		od.xleft       = 280,
+		os.xleft       = 1530,
+		width          = 768,
+		bottom         = 2265,
+		height         = 257,
+		plot.height    = 300,
+		date.birth.pos = 235,
+		date.exam.pos  = 464
+	) {
 		
 		if( ! exists( "pdf.formats" ) ) {
 			
@@ -22,14 +25,16 @@ add.pdf.format <-
 		
 		pdf.formats[[ doc.type ]] <<- 
 			list( 
-				doc.type    = doc.type,
-				dpi         = dpi,
-				od.xleft    = od.xleft,
-				os.xleft    = os.xleft,
-				width       = width,
-				bottom      = bottom,
-				height      = height,
-				plot.height = plot.height
+				doc.type       = doc.type,
+				dpi            = dpi,
+				od.xleft       = od.xleft,
+				os.xleft       = os.xleft,
+				width          = width,
+				bottom         = bottom,
+				height         = height,
+				plot.height    = plot.height,
+				date.birth.pos = date.birth.pos,
+				date.exam.pos  = date.exam.pos
 			)
 	}
 
@@ -86,7 +91,24 @@ xtrct.plot.from.pdf <-
 
 add.pdf.format( )
 
-add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300 )
+add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300, 235, 464 )
 
 pdf.formats
 
+xtrct.dates.from.pdf <-
+	function( fname, doc.type = "default" ) {
+	
+	#dob.pos <- grepRaw( "DOB:[[:space:]]*[0-9]{2}\\..*\\.[12][0-9]{3}", txt )
+	#exam.pos <- grepRaw( "Exam\\.:[[:space:]]*[0-9]{2}\\..*\\.[12][0-9]{3}", txt )
+	
+		doc.info <- pdf.formats[[ doc.type ]]
+		
+		txt <- pdf_text( fname )
+		
+		list(
+			birth = as.Date( substr( txt, doc.info [[ "date.birth.pos" ]], doc.info [[ "date.birth.pos" ]] + 11 ), format = "%d.%b.%Y" ),
+			exam  = as.Date( substr( txt, doc.info [[ "date.exam.pos" ]],  doc.info [[ "date.exam.pos" ]] + 11 ),  format = "%d.%b.%Y" )
+		)
+	}
+
+xtrct.dates.from.pdf( "visitor/LI01274671_Beispiel.pdf", "spectralis" )

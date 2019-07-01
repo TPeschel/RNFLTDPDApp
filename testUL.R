@@ -51,11 +51,11 @@ ui1 <-
 
 		header = dashboardHeader(
 			title = "RNFLT",
-			titleWidth = '15%'
+			titleWidth = '97.5%'
 		),
 		
 		sidebar = dashboardSidebar(
-			#width = '15%',
+			#width = '20%',
 			sidebarMenu(
 				menuItem(
 					text = "VISITOR",
@@ -86,8 +86,8 @@ ui1 <-
 				background = "black",
 				fileInput( 'file_input', 'upload file ( . pdf format only)', accept = c( '.pdf' ) ),
 				hr( ),
-				dateInput( "dob",      label = "DOB" ),
-				dateInput( "examDate", label = "Exam Date", value = Sys.Date( ) ),
+				dateInput( "birthDate", label = "Birth Date" ),
+				dateInput( "examDate",  label = "Exam Date", value = Sys.Date( ) ),
 				hr( ),
 				textOutput( "ageText" )
 			)
@@ -132,10 +132,13 @@ ui1 <-
 		)
 	)
 
-s1 <-
+srv1 <-
 	function( input, output, session ) {
 		
-		print( "was here" )
+		###
+		# delete temporary pdf on close
+		###
+		onStop( function( ) file.remove( "tmp/tmp.pdf" ) )
 		
 		rv <- reactiveValues( )
 
@@ -148,13 +151,11 @@ s1 <-
 		observeEvent(
 			eventExpr = {
 
-				c( input$examDate, input$dob )
+				c( input$examDate, input$birthDate )
 			},
 			handlerExpr = {
 
-				rv$age <- as.double( round( ( input$examDate - input$dob ) / 365.25, 1 ) )
-
-				print( paste0( "Age: ", rv$age, " years" ) )
+				rv$age <- as.double( round( ( input$examDate - input$birthDate ) / 365.25, 1 ) )
 
 				output$ageText <-
 					renderText(
@@ -188,14 +189,22 @@ s1 <-
 								tags$iframe( style =" height:700px; width:100%", src = "tmp/tmp.pdf" )
 							} )
 
-						incProgress( 1, "Analyse pdf...", detail = "from copy" )
+						incProgress( 1, "Analyse pdf...", detail = "extract plot" )
 
 						rv$visitor <- xtrct.plot.from.pdf( "tmp/tmp.pdf" )
-
+						
+						incProgress( 1, "Analyse pdf...", detail = "extract dates" )
+						
+						d <- xtrct.dates.from.pdf( "tmp/tmp.pdf" )
+						
+						updateDateInput( session, "birthDate", value = d [[ "birth" ]] )
+						 
+						updateDateInput( session, "examDate",  value = d [[ "exam" ]] )
+						
 						incProgress( 1, "Analyse pdf...", detail = "finished" )
 
 					},
-					min = 0, max = 4, value = 0, message = "Load And Analyse PFD"
+					min = 0, max = 5, value = 0, message = "Load And Analyse PFD"
 				)
 			}
 		)
@@ -224,7 +233,7 @@ s1 <-
 
 shinyApp(
 	ui     = ui1, 
-	server = s1
+	server = srv1
 )
 
 
@@ -283,4 +292,6 @@ shinyApp(
 # 		)
 # 	}
 # )
+
+
 
