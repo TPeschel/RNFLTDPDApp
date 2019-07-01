@@ -30,14 +30,12 @@ rnfltPlot2D <-
 		output$rnfltPlot2D <-
 			renderPlotly( {
 				
-				# validate(
-				# 	need( ! is.null( rv$visitor ), "no visitor available" )
-				# )
+				validate(
+					need( ! is.null( rv$visitor ), "no visitor available" )
+				)
 				
 				plot_ly( rv$visitor, x = ~ angle, y = ~ od, type = "scatter", name = "od", mode = "lines", line = list( color = "#000000" ) ) %>%
 					add_trace( y = ~ os, name = "os", mode = "lines", line = list( color = "#808080" ) ) %>%
-					add_trace( y = ~ abs( os - od ), name = "| os - od |", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 255, 255, 127, 0.5)', line = list( color = "#FFFF7F" ) ) %>%
-					add_trace( y = ~ ( os - od ), name = "os - od", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 127, 127, 255, 0.5)', line = list( color = "#000000", width = 5 ) ) %>%
 					layout( title = "RNFLT-Plots", yaxis = list( title = "RNFLT [µm]" ) )
 			} )
 	}
@@ -47,19 +45,17 @@ rnfltdPlot2D <-
 		output$rnfltdPlot2D <-
 			renderPlotly( {
 				
-				# validate(
-				# 	need( ! is.null( rv$visitor ), "no visitor available" )
-				# )
+				validate(
+					need( ! is.null( rv$visitor ), "no visitor available" )
+				)
 				
-				plot_ly( rv$visitor, x = ~ angle, y = ~ od, type = "scatter", name = "od", mode = "lines", line = list( color = "#000000" ) ) %>%
-					add_trace( y = ~ os, name = "os", mode = "lines", line = list( color = "#808080" ) ) %>%
-					add_trace( y = ~ abs( os - od ), name = "| os - od |", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 255, 255, 127, 0.5)', line = list( color = "#FFFF7F" ) ) %>%
+				plot_ly( rv$visitor, x = ~ angle, y = ~ abs( os - od ), name = "| os - od |", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 255, 255, 127, 0.5)', line = list( color = "#FFFF7F" ) ) %>%
 					add_trace( y = ~ ( os - od ), name = "os - od", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 127, 127, 255, 0.5)', line = list( color = "#000000", width = 5 ) ) %>%
-					layout( title = "RNFLT-Plots", yaxis = list( title = "RNFLT [µm]" ) )
+					layout( title = "RNFLTD-Plots", yaxis = list( title = "RNFLTD [µm]" ) )
 			} )
 	}
 
-ui1 <-
+ui <-
 	dashboardPage(
 		
 		title = "RNFLT - App" ,
@@ -86,14 +82,14 @@ ui1 <-
 					),
 					menuSubItem(
 						text = "PLOT RNFLT 2D",
-						tabName = "TAB_PLOT_RNFLT_PLOTLY_2D"
+						tabName = "TAB_PLOT_RNFLT_2D"
 					),
 					menuSubItem(
 						text = "PLOT RNFLTD 2D",
-						tabName = "TAB_PLOT_RNFLTD_PLOTLY_2D"
+						tabName = "TAB_PLOT_RNFLTD_2D"
 					),
 					menuSubItem(
-						text = "plot RNFLTD Heidelberg",
+						text = "PLOT RNFLTD Heidelberg",
 						tabName = "TAB_PLOT_VISITOR_HEIDELBERG"
 					)
 				)
@@ -145,7 +141,7 @@ ui1 <-
 						height = "800px",
 						title = "RNFLT-PLOT",
 						collapsible = T,
-						plotlyOutput( "rnfltPlot", height = '700px' ) %>% withSpinner( )
+						plotlyOutput( "rnfltPlot2D", height = '700px' ) %>% withSpinner( )
 					)
 				),
 				tabItem(
@@ -155,7 +151,7 @@ ui1 <-
 						height = "800px",
 						title = "RNFLTD-PLOT",
 						collapsible = T,
-						plotlyOutput( "rnfltdPlot", height = '700px' ) %>% withSpinner( )
+						plotlyOutput( "rnfltdPlot2D", height = '700px' ) %>% withSpinner( )
 					)
 				),
 				tabItem(
@@ -172,7 +168,7 @@ ui1 <-
 		)
 	)
 
-srv1 <-
+server <-
 	function( input, output, session ) {
 		
 		###
@@ -185,8 +181,6 @@ srv1 <-
 		rv$visitor <- NULL
 		
 		rv$sex     <- "unknown"
-		
-		#output$sexText <- renderText( paste0( "Sex: ", rv$sex ) )
 		
 		output$pdfview <- renderUI( {
 			tags$iframe( style = "height:700px; width:100%", src = "tmp/upload-pdf.pdf" )
@@ -246,7 +240,7 @@ srv1 <-
 						incProgress( 1, "Analyse pdf...", detail = "finished" )
 
 					},
-					min = 0, max = 5, value = 0, message = "Load And Analyse PFD"
+					min = 0, max = 5, value = 0, message = "Load And Analyse PDF"
 				)
 			}
 		)
@@ -277,10 +271,10 @@ srv1 <-
 		)
 	} 
 
-shinyApp(
-	ui     = ui1, 
-	server = srv1
-)
+# shinyApp(
+# 	ui     = ui1, 
+# 	server = srv1
+# )
 
 
 # shinyApp(

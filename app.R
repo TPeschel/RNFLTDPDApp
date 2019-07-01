@@ -9,10 +9,11 @@ library( "rhandsontable" )
 library( "shiny" )
 library( "shinycssloaders" )
 library( "shinydashboard" )
+library( "stringr" )
 
-source ( "server.R" )
-source ( "ui.R" )
-
+# source ( "server.R" )
+# source ( "ui.R" )
+source( "testUL.R" )
 # Run the application 
 shinyApp( 
 	ui     = ui,
