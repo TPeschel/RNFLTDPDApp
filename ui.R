@@ -1,3 +1,13 @@
+library( "dplyr" )
+library( "DT" )
+library( "markdown" )
+library( "plotly" )
+library( "rhandsontable" )
+library( "shiny" )
+library( "shinycssloaders" )
+library( "shinydashboard" )
+library( "stringr" )
+
 ui <-
 	dashboardPage(
 		
