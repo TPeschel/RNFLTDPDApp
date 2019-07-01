@@ -13,9 +13,7 @@ add.pdf.format <-
 		width          = 768,
 		bottom         = 2265,
 		height         = 257,
-		plot.height    = 300,
-		date.birth.pos = 235,
-		date.exam.pos  = 464
+		plot.height    = 300
 	) {
 		
 		if( ! exists( "pdf.formats" ) ) {
@@ -32,9 +30,7 @@ add.pdf.format <-
 				width          = width,
 				bottom         = bottom,
 				height         = height,
-				plot.height    = plot.height,
-				date.birth.pos = date.birth.pos,
-				date.exam.pos  = date.exam.pos
+				plot.height    = plot.height
 			)
 	}
 
@@ -91,24 +87,21 @@ xtrct.plot.from.pdf <-
 
 add.pdf.format( )
 
-add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300, 235, 464 )
+add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300 )
 
 pdf.formats
 
 xtrct.dates.from.pdf <-
 	function( fname, doc.type = "default" ) {
 	
-	#dob.pos <- grepRaw( "DOB:[[:space:]]*[0-9]{2}\\..*\\.[12][0-9]{3}", txt )
-	#exam.pos <- grepRaw( "Exam\\.:[[:space:]]*[0-9]{2}\\..*\\.[12][0-9]{3}", txt )
-	
-		doc.info <- pdf.formats[[ doc.type ]]
-		
 		txt <- pdf_text( fname )
 		
-		list(
-			birth = as.Date( substr( txt, doc.info [[ "date.birth.pos" ]], doc.info [[ "date.birth.pos" ]] + 11 ), format = "%d.%b.%Y" ),
-			exam  = as.Date( substr( txt, doc.info [[ "date.exam.pos" ]],  doc.info [[ "date.exam.pos" ]] + 11 ),  format = "%d.%b.%Y" )
-		)
+		if( doc.type %in% c( "default", "spectralis" ) ) {
+		
+			list(
+				birth = as.Date( stringr::str_extract( stringr::str_extract( txt, "DOB:.*[0-9]{4}" ),     "[0-9].*" ), format = "%d.%b.%Y" ),
+				exam  = as.Date( stringr::str_extract( stringr::str_extract( txt, "Exam\\.:.*[0-9]{4}" ), "[0-9].*" ), format = "%d.%b.%Y" ),
+				sex   = c( "male", "female" )[ match( stringr::str_extract( stringr::str_extract( txt, "Sex:.*[FM]{1}" ), "[FM]" ), c( "M", "F" ) ) ]
+			)
+		}
 	}
-
-xtrct.dates.from.pdf( "visitor/LI01274671_Beispiel.pdf", "spectralis" )

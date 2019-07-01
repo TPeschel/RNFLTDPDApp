@@ -25,14 +25,31 @@ heidelPlot <-
 			} )
 	}
 
-visPlot <- 
+rnfltPlot2D <- 
 	function( output, rv ) {
-		output$visPlot <-
+		output$rnfltPlot2D <-
 			renderPlotly( {
 				
-				validate(
-					need( ! is.null( rv$visitor ), "no visitor available" )
-				)
+				# validate(
+				# 	need( ! is.null( rv$visitor ), "no visitor available" )
+				# )
+				
+				plot_ly( rv$visitor, x = ~ angle, y = ~ od, type = "scatter", name = "od", mode = "lines", line = list( color = "#000000" ) ) %>%
+					add_trace( y = ~ os, name = "os", mode = "lines", line = list( color = "#808080" ) ) %>%
+					add_trace( y = ~ abs( os - od ), name = "| os - od |", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 255, 255, 127, 0.5)', line = list( color = "#FFFF7F" ) ) %>%
+					add_trace( y = ~ ( os - od ), name = "os - od", mode = "lines", opacity = .5, fill = "tozeroy", fillcolor = 'rgba( 127, 127, 255, 0.5)', line = list( color = "#000000", width = 5 ) ) %>%
+					layout( title = "RNFLT-Plots", yaxis = list( title = "RNFLT [µm]" ) )
+			} )
+	}
+
+rnfltdPlot2D <- 
+	function( output, rv ) {
+		output$rnfltdPlot2D <-
+			renderPlotly( {
+				
+				# validate(
+				# 	need( ! is.null( rv$visitor ), "no visitor available" )
+				# )
 				
 				plot_ly( rv$visitor, x = ~ angle, y = ~ od, type = "scatter", name = "od", mode = "lines", line = list( color = "#000000" ) ) %>%
 					add_trace( y = ~ os, name = "os", mode = "lines", line = list( color = "#808080" ) ) %>%
@@ -64,15 +81,19 @@ ui1 <-
 					# 	tabName = "TAB_UPLOAD_VISITOR_PDF"
 					# ),
 					menuSubItem(
-						text = "view visitor pdf",
+						text = "VIEW PDF",
 						tabName = "TAB_VIEW_VISITOR_PDF"
 					),
 					menuSubItem(
-						text = "plot visitor plotly 2d",
-						tabName = "TAB_PLOT_VISITOR_PLOTLY_2D"
+						text = "PLOT RNFLT 2D",
+						tabName = "TAB_PLOT_RNFLT_PLOTLY_2D"
 					),
 					menuSubItem(
-						text = "plot visitor heidelberg",
+						text = "PLOT RNFLTD 2D",
+						tabName = "TAB_PLOT_RNFLTD_PLOTLY_2D"
+					),
+					menuSubItem(
+						text = "plot RNFLTD Heidelberg",
 						tabName = "TAB_PLOT_VISITOR_HEIDELBERG"
 					)
 				)
@@ -84,12 +105,21 @@ ui1 <-
 				collapsible = T,
 				collapsed = F,
 				background = "black",
-				fileInput( 'file_input', 'upload file ( . pdf format only)', accept = c( '.pdf' ) ),
+				fileInput( 'file_input', 'upload file ( . pdf format only)', accept = c( '.pdf' ) )
+			),
+			hr( ),
+			box(
+				width = 12,
+				title = "Visitor's Data",
+				collapsible = T,
+				collapsed = F,
+				background = "black",
+				dateInput( "birthDate", label = "Birth Date: " ),
+				dateInput( "examDate",  label = "Exam Date:  ", value = Sys.Date( ) ),
+				radioButtons( "sex",    label = "Sex:        ", choiceNames = c( "unknown", "male", "female" ), choiceValues = c( "unknown", "male", "female" ), selected = "unknown" ),
 				hr( ),
-				dateInput( "birthDate", label = "Birth Date" ),
-				dateInput( "examDate",  label = "Exam Date", value = Sys.Date( ) ),
-				hr( ),
-				textOutput( "ageText" )
+				h4( textOutput( "ageText" ) ),
+				hr( )
 			)
 		),
 		
@@ -109,13 +139,23 @@ ui1 <-
 					)
 				),
 				tabItem(
-					tabName = "TAB_PLOT_VISITOR_PLOTLY_2D",
+					tabName = "TAB_PLOT_RNFLT_2D",
 					box(
 						width = 12,
 						height = "800px",
-						title = "PLOTLY-PLOT",
+						title = "RNFLT-PLOT",
 						collapsible = T,
-						plotlyOutput( "visPlot", height = '700px' ) %>% withSpinner( )
+						plotlyOutput( "rnfltPlot", height = '700px' ) %>% withSpinner( )
+					)
+				),
+				tabItem(
+					tabName = "TAB_PLOT_RNFLTD_2D",
+					box(
+						width = 12,
+						height = "800px",
+						title = "RNFLTD-PLOT",
+						collapsible = T,
+						plotlyOutput( "rnfltdPlot", height = '700px' ) %>% withSpinner( )
 					)
 				),
 				tabItem(
@@ -138,12 +178,16 @@ srv1 <-
 		###
 		# delete temporary pdf on close
 		###
-		onStop( function( ) file.remove( "tmp/tmp.pdf" ) )
+		onStop( function( ) { if( file.exists( "tmp/tmp.pdf" ) ) file.remove( "tmp/tmp.pdf" ) } )
 		
 		rv <- reactiveValues( )
 
 		rv$visitor <- NULL
-
+		
+		rv$sex     <- "unknown"
+		
+		#output$sexText <- renderText( paste0( "Sex: ", rv$sex ) )
+		
 		output$pdfview <- renderUI( {
 			tags$iframe( style = "height:700px; width:100%", src = "tmp/upload-pdf.pdf" )
 		} )
@@ -165,12 +209,6 @@ srv1 <-
 					)
 			}
 		)
-
-		# observeEvent(
-		# 	eventExpr = rv$age,
-		# 	handlerExpr = {
-		#
-		# 	} )
 
 		observeEvent(
 			eventExpr = input$file_input,
@@ -201,6 +239,10 @@ srv1 <-
 						 
 						updateDateInput( session, "examDate",  value = d [[ "exam" ]] )
 						
+						updateRadioButtons( session, "sex",    selected = d [[ "sex" ]] )
+						
+						output$sexText <- renderText( paste0( "Sex: ", rv$sex <- d [[ "sex" ]] ) )
+						
 						incProgress( 1, "Analyse pdf...", detail = "finished" )
 
 					},
@@ -215,17 +257,21 @@ srv1 <-
 
 				withProgress(
 					{
-						incProgress( 1, "Render plots...", detail = "Plotly" )
+						incProgress( 1, "Render plots...", detail = "RNDLT2D" )
 
-						visPlot( output, rv )
+						rnfltPlot2D( output, rv )
 
-						incProgress( 1, "Render plots...", detail = "Heidelplot" )
-
+						incProgress( 1, "Render plots...", detail = "RNDFLTD2D" )
+						
+						rnfltdPlot2D( output, rv )
+						
+						incProgress( 1, "Render plots...", detail = "Heidelberg" )
+						
 						heidelPlot( output, rv )
 
 						incProgress( 1, "Finish...", detail = "...ed" )
 					},
-					min = 0, max = 3, value = 0, message = "Render plots..."
+					min = 0, max = 4, value = 0, message = "Render plots..."
 				)
 			}
 		)
