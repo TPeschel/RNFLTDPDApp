@@ -1,10 +1,13 @@
 rm( list = ls( ) )
 
-neccessary.pkgs <- c( "DT", "markdown", "plotrix", "plotly", "rhandsontable", "shiny", "shinycssloaders", "shinydashboard", "stringr", "dplyr" )
-
-installed.pkgs <- rownames( installed.packages( ) )
-
-install.packages( setdiff( neccessary.pkgs, installed.pkgs ), repos="https://cran.uni-muenster.de/" )
+# neccessary.pkgs <- c( "installr", "DT", "markdown", "plotrix", "plotly", "rhandsontable", "shiny", "shinycssloaders", "shinydashboard", "stringr", "dplyr", "pdf", "gamlss" )
+# 
+# installed.pkgs <- rownames( installed.packages( ) )
+# 
+# pkgs.2.install <- setdiff( neccessary.pkgs, installed.pkgs )
+# 
+# if( 0 < length( pkgs.2.install ) ) 
+# 	install.packages( pkgs.2.install, repos="https://cran.uni-muenster.de/" )
 
 library( "dplyr" )
 library( "DT" )
