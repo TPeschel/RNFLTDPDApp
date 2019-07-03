@@ -8,22 +8,24 @@ rm( list = ls( ) )
 # 
 # if( 0 < length( pkgs.2.install ) ) 
 # 	install.packages( pkgs.2.install, repos="https://cran.uni-muenster.de/" )
+# 
+# library( "dplyr" )
+# library( "DT" )
+# library( "markdown" )
+# library( "plotly" )
+# library( "rhandsontable" )
+# library( "shiny" )
+# library( "shinycssloaders" )
+# library( "shinydashboard" )
+# library( "stringr" )
 
-library( "dplyr" )
-library( "DT" )
-library( "markdown" )
-library( "plotly" )
-library( "rhandsontable" )
-library( "shiny" )
-library( "shinycssloaders" )
-library( "shinydashboard" )
-library( "stringr" )
-
-source ( "server.R" )
-source ( "ui.R" )
+source ( "server.1st.R" )
+source ( "ui.1st.R" )
 # source( "testUL.R" )
+
 # Run the application 
-shinyApp( 
+# 
+shinyApp(
 	ui     = ui,
 	server = server
 )

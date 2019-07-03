@@ -4,17 +4,22 @@
 require( "gamlss.dist" )
 require( "plotrix" )
 
-# ply( x, c( c1, c2, c3 ) ) 
-# ret x * ( x * ( x * c3 + c2 ) + c1 ) = c1 * x + c2 * x^2 + c3 * x^3
+###
+# ply( x, c( c1, c2, c3 ), c0 ) 
+# ret = c0 + c1 * x + c2 * x^2 + c3 * x^3
+# ret = x * ( x * ( x * c3 + c2 ) + c1 ) + c0
 ## 
 ply <-
-	function( x, coefficients ) {
+	function( x, coefficients, intercept = 0 ) {
 		
 		s <- 0
 		
-		for( c in rev( coefficients ) )  s <- x * ( s + c )
+		for( c in rev( coefficients ) ) { 
+			
+			s <- x * ( s + c ) 
+		}
 		
-		s
+		s + intercept
 	}
 
 # return TRUE for all measurement locations that belong to the sector
@@ -25,8 +30,11 @@ ply <-
 # n: number of A-scans, i.e. measurement locations on the circle
 sector.indices <-
 	function( sector.label, n = 768 ) {
+		
 		len       <- round( n / 8 )
+		
 		sec       <- 1 : len
+		
 		( 1 : n ) %in%
 			switch(
 				sector.label,
@@ -131,6 +139,7 @@ calculate.normative.distribution.sectors.absdiff <-
 		
 		
 		nus  <- params$nu.intercept
+		
 		taus <- params$tau.intercept
 			
 		selected <- params$sector.labels %in% sectors
@@ -181,30 +190,51 @@ plot.rnflt.diff.with.norms <-
 			ylim=r,
 			xaxs="i", yaxs="i"
 		)
-		rect(0, r[1], 360, r[2], col="palegreen", border=NA)
-		xpoly = c(angles[1], angles, angles[768])
-		polygon(xpoly, c(r[1], qn[,2], r[1]), col="khaki1", border=NA)
-		polygon(xpoly, c(r[2], qn[,4], r[2]), col="khaki1", border=NA)
-		polygon(xpoly, c(r[1], qn[,1], r[1]), col="indianred1", border=NA)
-		polygon(xpoly, c(r[2], qn[,5], r[2]), col="indianred1", border=NA)
 		
-		abline(v=seq(0, 270, by=90)+45, lty="dotted", col="gray20")
-		abline(v=c(90, 270), lty="dotted", col="gray20")
-		plot.label <- function(xpos, l)
-			text(xpos, r[1], l, pos=3)
-		mapply(plot.label, c(22.5, 67.5, 112.5, 180, 360-112.5, 360-67.5, 360-22.5), c("T", "TS", "NS", "N", "NI", "TI", "T"))
-		abline(h=0, lty="dotted", col="gray20")
+		rect( 0, r[ 1 ], 360, r[ 2 ], col = "palegreen", border = NA )
 		
-		lines(angles, qn[,3], col="limegreen", lwd=3)
-		xx = seq(0, 360, length=length(rnfltdiff))
-		lines(xx, rnfltdiff, lwd=3)
+		xpoly <- c( angles[ 1 ], angles, angles[ 768 ] )
+		
+		polygon( xpoly, c( r[ 1 ], qn[ , 2 ], r[ 1 ] ), col = "khaki1", border = NA )
+		
+		polygon( xpoly, c( r[ 2 ], qn[ , 4 ], r[ 2 ] ), col = "khaki1", border = NA )
+		
+		polygon( xpoly, c( r[ 1 ], qn[ , 1 ], r[ 1 ] ), col = "indianred1", border = NA )
+		
+		polygon( xpoly, c( r[ 2 ], qn[ , 5 ], r[ 2 ] ), col = "indianred1", border = NA )
+		
+		abline( v = seq( 0, 270, by = 90 ) + 45, lty = "dotted", col = "gray20" )
+		
+		abline( v = c( 90, 270 ), lty = "dotted", col = "gray20" )
+		
+		plot.label <-
+			function( xpos, l ) {
+		
+			text( xpos, r[ 1 ], l, pos = 3 )
+		}
+		
+		mapply( 
+			plot.label, 
+			c( 22.5, 67.5, 112.5, 180, 360 - 112.5, 360 - 67.5, 360 - 22.5 ), 
+			c( "T", "TS", "NS", "N", "NI", "TI", "T" ) 
+		)
+		
+		abline( h = 0, lty = "dotted", col = "gray20" )
+		
+		lines( angles, qn[ , 3 ], col = "limegreen", lwd = 3 )
+		
+		xx<- seq( 0, 360, length = length( rnfltdiff ) )
+		
+		lines( xx, rnfltdiff, lwd = 3 )
+		
 		legend(
 			"top",
-			horiz=F,
-			col=c("palegreen", "khaki1", "indianred1"),
-			legend=c("5%-95%", "1%-5% / 95%-99%", "<1% / >99%"),
-			pch=15,
-			bg="white")
+			horiz  = F,
+			col    = c( "palegreen", "khaki1", "indianred1" ),
+			legend = c( "5%-95%", "1%-5% / 95%-99%", "<1% / >99%" ),
+			pch    = 15,
+			bg     = "white"
+		)
 	}
 
 # analogous to plot.rnflt.diff.with.norms, but for the sectors (and global mean)
@@ -222,55 +252,93 @@ plot.rnflt.diff.sectors.with.norms <-
 				mean( as.numeric( abs( rnfltdiff[ sector.indices( sector ) ] ) ), na.rm = T )
 			}
 	
-		abs.mean.diffs = sapply( constants$sectors, calculate.median.abs.rnflt.diff )
+		abs.mean.diffs <- sapply( constants$sectors, calculate.median.abs.rnflt.diff )
 	
 		prms <- calculate.normative.distribution.sectors.absdiff( age = age, rdf = radiusdiff, params = params )
 	
-		qn <- sapply(c(0.5, 0.95, 0.99), function(x) qBCT( x, prms$mu, prms$sigma, prms$nu, prms$tau ) )
+		qn <- sapply(c(0.5, 0.95, 0.99), function( x ) qBCT( x, prms$mu, prms$sigma, prms$nu, prms$tau ) )
 		
-		m  <- as.data.frame(cbind(as.numeric(abs.mean.diffs), qn))
-		colnames(m) <- c("m", "median", "q95", "q99")
-		rownames(m) <- sector.labels
-		cols <- ifelse(m$m>=m$q99, "indianred1", ifelse(m$m>=m$q95, "khaki1", "palegreen"))
-		names(cols) <- sector.labels
+		m  <- as.data.frame( cbind( as.numeric( abs.mean.diffs ), qn ) )
 		
-		bw = 0.05	# border width
-		op = par(mar=rep(0.1,4))
-		plot(1, 1, xlim=c(-3,3), ylim=c(-5,4), type="n", bty="n", xaxt="n", yaxt="n", asp=1, xlab="", ylab="")
+		colnames( m ) <- c( "m", "median", "q95", "q99" )
 		
-		draw.circle(0, 0, 1-bw, col=cols["rnfltMeanG"], border = NA)
-		draw.sec <- function(angle1, angle2, ...)
-			drawSectorAnnulus((angle1-2)*pi/180, (angle2+2)*pi/180, radius1=1+bw, radius2=3, ...)
-		draw.sec(180+45, 180-45, col=cols["rnfltMeanT"])
-		draw.sec(180-45, 90, col=cols["rnfltMeanTS"])
-		draw.sec(90, 45, col=cols["rnfltMeanNS"])
-		draw.sec(45, -45, col=cols["rnfltMeanN"])
-		draw.sec(-45, -90, col=cols["rnfltMeanNI"])
-		draw.sec(-90, -135, col=cols["rnfltMeanTI"])
-		draw.circle(0, 0, 3)
-		add.label <- function( sec = "rnfltMeanG" ) {
+		rownames( m ) <- sector.labels
+		
+		cols <- ifelse( m$m >= m$q99, "indianred1", ifelse( m$m >= m$q95, "khaki1", "palegreen" ) )
+		
+		names( cols ) <- sector.labels
+		
+		bw <- 0.05	# border width
+		
+		op <- par( mar = rep( 0.1, 4 ) )
+		
+		plot( 1, 1, xlim = c( -3, 3 ), ylim = c( -5, 4 ), type = "n", bty = "n", xaxt = "n", yaxt = "n", asp = 1, xlab = "", ylab = "" )
+		
+		draw.circle( 0, 0, 1 - bw, col = cols[ "rnfltMeanG" ], border = NA )
+		
+		draw.sec <- 
+			function( angle1, angle2, ... ) {
+				drawSectorAnnulus( 
+					( angle1 - 2 ) * pi / 180, 
+					( angle2 + 2 ) * pi / 180, 
+					radius1 = 1 + bw, 
+					radius2 = 3,
+					... )
+			}
+		
+		draw.sec( 180 + 45, 180 - 45, col = cols[ "rnfltMeanT" ] )
+		
+		draw.sec( 180 - 45,  90,      col = cols[ "rnfltMeanTS" ] )
+		
+		draw.sec(  90,       45,      col = cols[ "rnfltMeanNS" ] )
+		
+		draw.sec(  45,      -45,      col = cols[ "rnfltMeanN" ] )
+		
+		draw.sec( -45,      -90,      col = cols[ "rnfltMeanNI" ] )
+		
+		draw.sec( -90,     -135,      col = cols[ "rnfltMeanTI" ] )
+		
+		draw.circle( 0, 0, 3 )
+		
+		add.label <-
+			function( sec = "rnfltMeanG" ) {
+				
+				label <- sub( "rnfltMean(.+)$", "\\1", sec )
 			
-			label = sub("rnfltMean(.+)$", "\\1", sec)
-			r=ifelse(label=="G", 0, 2)
-			phi = switch(label,
-						 T = 180,
-						 TS = 112.5,
-						 NS = 67.5,
-						 N = 0,
-						 NI = -67.5,
-						 TI = -112.5,
-						 0)
-			x = r*cos(phi*pi/180)
-			y = r*sin(phi*pi/180)
-			text(x, y, paste(label, round(abs.mean.diffs[sec]), "", sep="\n"))
-			text(x, y, sprintf("\n\n(%.0f)", m[sec, "median"]), col="limegreen")
-		}
+				r <- ifelse( label == "G", 0, 2 )
+			
+				phi <-
+					switch(
+						label,
+						T  = 180,
+						TS = 112.5,
+						NS = 67.5,
+						N  = 0,
+						NI = -67.5,
+						TI = -112.5,
+						0
+					)
+				
+				x <- r * cos( phi * pi / 180 )
+				
+				y <- r * sin( phi * pi / 180 )
+			
+				text( x, y, paste( label, round( abs.mean.diffs[ sec ] ), "", sep = "\n" ) )
+			
+				text( x, y, sprintf( "\n\n(%.0f)", m[ sec, "median" ] ), col = "limegreen" )
+			}
+		
 		lapply( constants$sectors, add.label )
-		text(0, 4, "Mean absolute RNFLT\ndifference |OS-OD|", font=2, cex=1.2)
-		y = textbox(c(0,3), -4, "<95%", justify="c", margin=0.1, fill="palegreen")
-		y = textbox(c(0,3), y[2], "95% - 99%", justify="c", margin=0.1, fill="khaki1")
-		y = textbox(c(0,3), y[2], ">99%", justify="c", margin=0.1, fill="indianred1")
-		par(op)
+		
+		text( 0, 4, "Mean absolute RNFLT\ndifference |OS-OD|", font = 2, cex = 1.2 )
+		
+		y <- textbox( c( 0, 3 ),  -4,    "<95%",      justify = "c", margin = 0.1, fill = "palegreen" )
+		
+		y <- textbox( c( 0, 3 ), y[ 2 ], "95% - 99%", justify = "c", margin = 0.1, fill = "khaki1" )
+		
+		y <- textbox( c( 0, 3 ), y[ 2 ], ">99%",      justify = "c", margin = 0.1, fill = "indianred1" )
+		
+		par( op )
 	}
 
 # combines plot.rnflt.diff.sectors.with.norms and plot.rnflt.diff.with.norms
@@ -281,6 +349,7 @@ difference.colorplot <-
 		layout( matrix( 1 : 2, nrow = 1 ), widths = c( 0.75, 0.25 ) )
 		
 		plot.rnflt.diff.with.norms( rnfltdiff = rnfltdiff, age = age, radiusdiff = radiusdiff, smoothing = smoothing, params = params.rdiff )
+		
 		plot.rnflt.diff.sectors.with.norms( rnfltdiff = rnfltdiff, age = age, radiusdiff = radiusdiff, params = params.absrdiff )
 	}
 
@@ -298,6 +367,7 @@ constants <<-
 	)
 
 load( "data/examples.RData" )
+
 load( "data/parameters.RData" )
 
 # difference.colorplot.wrapper( examples$rnfltdiff_example, params.rdiff = parameters$rnflt_diff_params, params.absrdiff = parameters$sector_abs_rnflt_diff_params )
