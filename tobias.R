@@ -223,7 +223,7 @@ plot.rnflt.diff.with.norms <-
 		
 		lines( angles, qn[ , 3 ], col = "limegreen", lwd = 3 )
 		
-		xx<- seq( 0, 360, length = length( rnfltdiff ) )
+		xx <- seq( 0, 360, length = length( rnfltdiff ) )
 		
 		lines( xx, rnfltdiff, lwd = 3 )
 		
@@ -282,8 +282,7 @@ plot.rnflt.diff.sectors.with.norms <-
 					( angle1 - 2 ) * pi / 180, 
 					( angle2 + 2 ) * pi / 180, 
 					radius1 = 1 + bw, 
-					radius2 = 3,
-					... )
+					radius2 = 3 )
 			}
 		
 		draw.sec( 180 + 45, 180 - 45, col = cols[ "rnfltMeanT" ] )

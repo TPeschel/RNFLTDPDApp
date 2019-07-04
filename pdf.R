@@ -46,7 +46,7 @@ xtrct.plot.from.pdf <-
 		
 		pos.of.blacks  <- function( blcks ) median( which( blcks ) )
 		
-		get.y          <- function( doc, blck.px ) { nrows = nrow( blck.px ); doc [[ "plot.height" ]] * ( nrows -  apply( blck.px, 2, pos.of.blacks ) ) / nrows }
+		get.y          <- function( doc, blck.px ) { nrows = nrow( blck.px ); doc [[ "plot.height" ]] * ( nrows - apply( blck.px, 2, pos.of.blacks ) ) / nrows - .5 }
 
 		thcknss        <- function( content, doc.info, oculus ) {
 			
@@ -56,7 +56,10 @@ xtrct.plot.from.pdf <-
 			
 			y  <- get.y( doc.info, m )
 			
-			if( oculus == "od" && doc.type %in% c( "default", "spectralis" ) ) {
+			#if( oculus == "od" && doc.type %in% c( "default", "spectralis" ) ) {
+			if( doc.type %in% c( "default", "spectralis" ) ) {
+					
+				print( "impute one value" )
 				
 				y[ 1 ] <- y[ 768 ]
 			}
