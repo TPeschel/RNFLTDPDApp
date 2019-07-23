@@ -139,9 +139,7 @@ server <-
 						
 						output$sexText <- renderText( paste0(   "Sex: ", rv$sex <- d [[ "sex" ]] ) )
 						
-						print( paste0( "visitor/visitor_", d [[ "id" ]], "_", d [[ "exam" ]], ".csv" ) )
-						
-						write.csv2( rv$visitor, file = paste0( "visitor/visitor_", d [[ "id" ]], "_", d [[ "exam" ]], ".csv" ) )
+						write.csv2( rv$visitor, file = paste0( "data/visitor_", d [[ "id" ]], "_", d [[ "exam" ]], ".csv" ) )
 						
 						incProgress( 1, "Analyse pdf...", detail = "finished" )
 						
