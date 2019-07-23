@@ -54,7 +54,7 @@ xtrct.plot.from.pdf <-
 			
 			m <- mask.black.pix( g )
 			
-			y  <- get.y( doc.info, m )
+			y <- get.y( doc.info, m )
 			
 			#if( oculus == "od" && doc.type %in% c( "default", "spectralis" ) ) {
 			if( doc.type %in% c( "default", "spectralis" ) ) {
@@ -85,26 +85,32 @@ xtrct.plot.from.pdf <-
 		
 		names( ret ) <- c( "angle", "od", "os" )
 		
+		attr( ret, "ID" ) <- fname
+		
 		ret
 	}
+
+xtrct.text.from.pdf <-
+	function( fname, doc.type = "default" ) {
+		
+		txt <- pdf_text( fname )
+		
+		if( doc.type %in% c( "default", "spectralis" ) ) {
+			
+			list(
+				birth = b<-as.Date( stringr::str_extract( stringr::str_extract( txt, "DOB:.*[0-9]{4}" ),     "[0-9].*" ), format = "%d.%b.%Y" ),
+				exam  = e<-as.Date( stringr::str_extract( stringr::str_extract( txt, "Exam\\.:.*[0-9]{4}" ), "[0-9].*" ), format = "%d.%b.%Y" ),
+				age   = round( as.double( difftime( e, b, "days" ) ) / 365.25, 1 ),
+				sex   = c( "male", "female" )[ match( stringr::str_extract( stringr::str_extract( txt, "Sex:.*[FM]" ), "[FM]" ), c( "M", "F" ) ) ],
+				fname = fname,
+				id    = stringr::str_extract( stringr::str_extract( txt, "Patient ID:.*LI[0-9]{7}[0-9Xx]" ), "LI.*" )
+			)
+		}
+	}
+
 
 add.pdf.format( )
 
 add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300 )
 
 pdf.formats
-
-xtrct.dates.from.pdf <-
-	function( fname, doc.type = "default" ) {
-	
-		txt <- pdf_text( fname )
-		
-		if( doc.type %in% c( "default", "spectralis" ) ) {
-		
-			list(
-				birth = as.Date( stringr::str_extract( stringr::str_extract( txt, "DOB:.*[0-9]{4}" ),     "[0-9].*" ), format = "%d.%b.%Y" ),
-				exam  = as.Date( stringr::str_extract( stringr::str_extract( txt, "Exam\\.:.*[0-9]{4}" ), "[0-9].*" ), format = "%d.%b.%Y" ),
-				sex   = c( "male", "female" )[ match( stringr::str_extract( stringr::str_extract( txt, "Sex:.*[FM]{1}" ), "[FM]" ), c( "M", "F" ) ) ]
-			)
-		}
-	}

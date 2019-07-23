@@ -282,7 +282,8 @@ plot.rnflt.diff.sectors.with.norms <-
 					( angle1 - 2 ) * pi / 180, 
 					( angle2 + 2 ) * pi / 180, 
 					radius1 = 1 + bw, 
-					radius2 = 3 )
+					radius2 = 3, 
+					... )
 			}
 		
 		draw.sec( 180 + 45, 180 - 45, col = cols[ "rnfltMeanT" ] )

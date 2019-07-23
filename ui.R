@@ -16,23 +16,19 @@ ui <-
 		skin = "black",
 		
 		header = dashboardHeader(
-			title = "RNFLT",
-			titleWidth = '97.5%'
+			title = "RNFLT"#,
+			#titleWidth = '97.5%'
 		),
 		
-		sidebar = dashboardSidebar(
+		sidebar = dashboardSidebar(collapsed = F,
 			#width = '20%',
 			sidebarMenu(
 				menuItem(
 					text = "VISITOR",
-					# menuSubItem(
-					# 	text = "upload visitor pdf",
-					# 	tabName = "TAB_UPLOAD_VISITOR_PDF"
-					# ),
-					menuSubItem(
-						text = "VIEW PDF",
-						tabName = "TAB_VIEW_VISITOR_PDF"
-					),
+					tabName = "TAB_VIEW_VISITOR_PDF"
+				),
+				menuItem(
+					text = "PLOTS",
 					menuSubItem(
 						text = "PLOT RNFLT 2D",
 						tabName = "TAB_PLOT_RNFLT_2D"
@@ -46,75 +42,112 @@ ui <-
 						tabName = "TAB_PLOT_VISITOR_HEIDELBERG"
 					)
 				)
-			),
-			hr( ),
-			box(
-				width = 12,
-				title = "UPLOAD A PDF",
-				collapsible = T,
-				collapsed = F,
-				background = "black",
-				fileInput( 'file_input', 'upload file ( . pdf format only)', accept = c( '.pdf' ) )
-			),
-			hr( ),
-			box(
-				width = 12,
-				title = "Visitor's Data",
-				collapsible = T,
-				collapsed = F,
-				background = "black",
-				dateInput( "birthDate", label = "Birth Date: " ),
-				dateInput( "examDate",  label = "Exam Date:  ", value = Sys.Date( ) ),
-				radioButtons( "sex",    label = "Sex:        ", choiceNames = c( "unknown", "male", "female" ), choiceValues = c( "unknown", "male", "female" ), selected = "unknown" ),
-				hr( ),
-				h4( textOutput( "ageText" ) ),
-				hr( )
 			)
 		),
 		
 		body = dashboardBody(
+			shiny::tags$head(
+				shiny::tags$script(
+					"
+					// define a function that returns a struct named resolution
+					// containing width and height of the inner window
+					// accessible in shiny as a list named input$resolution
+					// which elements are
+					// width:  input$resolution$width
+					// height: input$resolution$height
+					function resized( e ) {
+						Shiny.onInputChange( 
+							'resolution', 
+							{ 
+								width  : window.innerWidth,
+								height : window.innerHeight
+							}
+						);
+					}
+					
+					// call the function resized when shiny connects
+					$( document ).on(
+						'shiny:connected',
+						resized
+					);
+					
+					// call the function resized when the window resizes
+					$( window ).resize(
+						resized
+					);
+					"
+				),
+				tags$style(
+					HTML(
+						'.wrapper {height: auto !important; position:relative; overflow-x:hidden; overflow-y:hidden}'
+					)
+				)
+			),
 			tabItems(
 				# tabItem(
 				# 	tabName = "TAB_UPLOAD_VISITOR_PDF"
 				# ),
 				tabItem(
 					tabName = "TAB_VIEW_VISITOR_PDF",
-					box(
-						title = "VIEW PDF",
-						height = "800px",
-						collapsible = T,
-						collapsed = F,
-						uiOutput( "pdfview" ) %>% withSpinner( )
+					fluidRow(
+						box(
+							width = 4,
+							title = "UPLOAD A PDF",
+							collapsible = T,
+							collapsed = F,
+							fileInput( 'file_input', 'upload file ( . pdf format only)', accept = c( '.pdf' ) ),
+							fluidRow(
+								column( width = 6, h5( textOutput( "idText" ) ) ),
+								column( width = 6, h5( textOutput( "sexText" ) ) ) 
+							),
+							hr( ),
+							fluidRow(
+								column( width = 6, h5( textOutput( "birthText" ) ) ),
+								column( width = 6, h5( textOutput( "examText" ) ) )
+							),
+							hr( ),
+							fluidRow(
+								column( width = 12, h5( textOutput( "ageText" ) ) ) 
+							)
+						),
+						box(
+							width = 8,
+							title = "PDF",
+							height = "auto",
+							collapsible = T,
+							collapsed = F,
+							uiOutput( "pdfview" )
+						)
 					)
 				),
 				tabItem(
 					tabName = "TAB_PLOT_RNFLT_2D",
 					box(
 						width = 12,
-						height = "800px",
+						#height = "800px",
 						title = "RNFLT-PLOT",
-						collapsible = T,
-						plotlyOutput( "rnfltPlot2D", height = '700px' ) %>% withSpinner( )
+						collapsible = F,
+						uiOutput( "UIrnfltPlot2D" )
 					)
 				),
 				tabItem(
 					tabName = "TAB_PLOT_RNFLTD_2D",
 					box(
 						width = 12,
-						height = "800px",
+						#height = "800px",
 						title = "RNFLTD-PLOT",
-						collapsible = T,
-						plotlyOutput( "rnfltdPlot2D", height = '700px' ) %>% withSpinner( )
+						collapsible = F,
+						uiOutput( "UIrnfltdPlot2D" )
 					)
 				),
 				tabItem(
 					tabName = "TAB_PLOT_VISITOR_HEIDELBERG",
 					box( 
 						width = 12,
-						height = "800px",
+						#height = "800px",
 						title = "HEIDELBERG-STYLE-PLOT",
-						collapsible = T,
-						plotOutput( "heidelPlot", height = '700px' ) %>% withSpinner( )
+						collapsible = F,
+						uiOutput( "UIheidelPlot" )
 					)
 				)
 			)

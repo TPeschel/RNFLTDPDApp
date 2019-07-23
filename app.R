@@ -19,8 +19,8 @@ rm( list = ls( ) )
 # library( "shinydashboard" )
 # library( "stringr" )
 
-source ( "server.1st.R" )
-source ( "ui.1st.R" )
+source ( "server.R" )
+source ( "ui.R" )
 # source( "testUL.R" )
 
 # Run the application 
@@ -29,4 +29,3 @@ shinyApp(
 	ui     = ui,
 	server = server
 )
-	
