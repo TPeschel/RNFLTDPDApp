@@ -57,8 +57,8 @@ spectralis.pdf.to.thicknesses <-
 		r
 	}
 
-# pdf.data <-
-# 	spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
+pdf.data <-
+	spectralis.pdf.to.thicknesses( "visitor/LI01274671_Beispiel.pdf" )
 # 
 # require( "plotly" )
 # 

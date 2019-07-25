@@ -41,7 +41,15 @@ ui <-
 						text = "PLOT RNFLTD Heidelberg",
 						tabName = "TAB_PLOT_VISITOR_HEIDELBERG"
 					)
+				),
+				menuItem(
+					text = "TABLES",
+					menuSubItem(
+						text = "TABLE RNFLTD",
+						tabName = "TAB_TABLE_RNFLTD"
+					)
 				)
+				
 			)
 		),
 		
@@ -148,6 +156,13 @@ ui <-
 						title = "HEIDELBERG-STYLE-PLOT",
 						collapsible = F,
 						uiOutput( "UIheidelPlot" )
+					)
+				),
+				tabItem(
+					tabName = "TAB_TABLE_RNFLTD",
+					box(
+						width = 12,
+						DT::dataTableOutput( "table_diffs" )
 					)
 				)
 			)

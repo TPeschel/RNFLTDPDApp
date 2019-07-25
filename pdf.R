@@ -40,13 +40,13 @@ xtrct.plot.from.pdf <-
 		##########################################################################################################
 		# some functions
 		##########################################################################################################
-		graph          <- function( a, d, o ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]], d [[ paste0( o, ".xleft" ) ]] : ( d [[ paste0( o, ".xleft" ) ]] + d [[ "width" ]] ), ]
+		graph          <- function( a, d, o ) a[ ( d [[ "bottom" ]] - d [[ "height" ]] ) : d [[ "bottom" ]], d [[ paste0( o, ".xleft" ) ]] : ( d [[ paste0( o, ".xleft" ) ]] + ( d [[ "width" ]] - 1 ) ), ]
 		
 		mask.black.pix <- function( o ) o[ , , 1 ] == 0 & o[ , , 2 ] == 0 & o[ , , 3 ] == 0
 		
 		pos.of.blacks  <- function( blcks ) median( which( blcks ) )
 		
-		get.y          <- function( doc, blck.px ) { nrows = nrow( blck.px ); doc [[ "plot.height" ]] * ( nrows - apply( blck.px, 2, pos.of.blacks ) ) / nrows - .5 }
+		get.y          <- function( doc, blck.px ) { nrows = nrow( blck.px ); doc [[ "plot.height" ]] * ( nrows - apply( blck.px, 2, pos.of.blacks ) ) / nrows - 0 }
 
 		thcknss        <- function( content, doc.info, oculus ) {
 			
@@ -114,3 +114,5 @@ add.pdf.format( )
 add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300 )
 
 pdf.formats
+
+xtrct.plot.from.pdf( "visitor/LI01316794_RNFLT.pdf" )

@@ -11,6 +11,18 @@ library( "stringr" )
 source( "pdf.R" )
 source( "tobias.R" )
 
+tableOptions <-
+	list(
+		paging = TRUE,
+		pageLength = 10,
+		searching = TRUE,
+		fixedColumns = TRUE,
+		autoWidth = FALSE,
+		ordering = TRUE,
+		dom = 'Bpfrtip', 
+		buttons = c('copy', 'excel', 'csv', 'print', 'colvis' )
+	)
+
 addResourcePath( "tmp", paste0( getwd( ), "/tmp" ) )
 
 heidelPlot <- 
@@ -139,7 +151,15 @@ server <-
 						
 						output$sexText <- renderText( paste0(   "Sex: ", rv$sex <- d [[ "sex" ]] ) )
 						
-						write.csv2( rv$visitor, file = paste0( "data/visitor_", d [[ "id" ]], "_", d [[ "exam" ]], ".csv" ) )
+						#write.csv2( rv$visitor, file = paste0( "data/visitor_", d [[ "id" ]], "_", d [[ "exam" ]], ".csv" ) )
+						
+						output$table_diffs <- DT::renderDataTable( {
+								rv$visitor
+							},
+							extensions = 'Buttons',
+							server  = F,
+							options = tableOptions
+						)
 						
 						incProgress( 1, "Analyse pdf...", detail = "finished" )
 						
