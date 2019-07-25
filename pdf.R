@@ -115,4 +115,4 @@ add.pdf.format( "spectralis", 312, 280, 1530, 768, 2265, 257, 300 )
 
 pdf.formats
 
-xtrct.plot.from.pdf( "visitor/LI01316794_RNFLT.pdf" )
+#xtrct.plot.from.pdf( "visitor/LI01316794_RNFLT.pdf" )
