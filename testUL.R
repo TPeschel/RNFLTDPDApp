@@ -227,7 +227,7 @@ server <-
 						
 						incProgress( 1, "Analyse pdf...", detail = "extract dates" )
 						
-						d <- xtrct.dates.from.pdf( "tmp/tmp.pdf" )
+						d <- xtrct.text.from.pdf( "tmp/tmp.pdf" )
 						
 						updateDateInput( session, "birthDate", value = d [[ "birth" ]] )
 						 
